@@ -55,8 +55,8 @@ class Rayons():
 
 		#DEBUG
 		if 0:
-			#self.can.create_line(self.x-800,self.y,self.x+800,self.y,dash=True,tag=self.tag)
-			#self.can.create_line(self.x,self.y-800,self.x,self.y+800,dash=True,tag=self.tag)
+			self.can.create_line(self.x-800,self.y,self.x+800,self.y,dash=True,tag=self.tag)
+			self.can.create_line(self.x,self.y-800,self.x,self.y+800,dash=True,tag=self.tag)
 			self.can.create_text(50,50,text="cadran 3")
 			self.can.create_text(750,50,text="cadran 4")
 			self.can.create_text(50,750,text="cadran 2")
@@ -84,7 +84,14 @@ class Rayons():
 					y = (det1 * a1[1] + det2 * a2[1])/(det1+det2)
 
 					angle = atan2(self.x - x,self.y - y)
-					if (((b1[0] >= x >= b2[0]) or (b1[0] <= x <= b2[0])) and ((b1[1] >= y >= b2[1]) or (b1[1] <= y <= b2[1]))): # Vérification qu'on est dans le segment ou sur le bord | /!\ MODIFICATION PLUS TARD
+
+					if (b1[0] == int(x) and b1[1] == int(y)) or (b2[0] == int(x) and  b2[1] == int(y)):
+						if b1[0] == int(x):
+							print([int(x),int(y)],b1)
+						elif b2[0]==int(x):
+							print([int(x),int(y)],b2)
+
+					if ((b1[0] > x > b2[0]) or (b1[0] < x < b2[0])) and ((b1[1] > y > b2[1]) or (b1[1] < y < b2[1])): # Vérification qu'on est dans le segment ou sur le bord | /!\ MODIFICATION PLUS TARD
 						#self.can.create_oval(x-4,y-4,x+4,y+4,fill="yellow",outline="black",width=2,tag=self.tag)
 						dist = sqrt((x-self.x)**2 + (y-self.y)**2)	# Calcul de la distance centre - point d'intersection
 						if angle<=0:	# Si on va dans un sens
