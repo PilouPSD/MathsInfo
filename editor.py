@@ -25,14 +25,12 @@ class Rayons():
 						a2 = [pol.points[k].x,pol.points[k].y]				
 						#self.can.create_line(self.x,self.y,a2[0],a2[1],fill="red",tag=self.tag)
 
-
 						rays = self.testRay(a1,a2)
 						ray = rays[0]
 						if ray!=None:
 							if(ray[0] == a2[0] and ray[1] == a2[1]):
 								#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
 								self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
-
 
 						ray = rays[1]
 						if ray!=None:
@@ -120,7 +118,7 @@ class Rayons():
 							#print("ça passe")
 							pass
 
-					if ((b1[0] > x > b2[0]) or (b1[0] < x < b2[0])) and ((b1[1] > y > b2[1]) or (b1[1] < y < b2[1])): # Vérification qu'on est dans le segment ou sur le bord | /!\ MODIFICATION PLUS TARD
+					if ((b1[0] > x > b2[0]) or (b1[0] < x < b2[0])) and ((b1[1] > y > b2[1]) or (b1[1] < y < b2[1])): # Vérification qu'on est dans le segment
 						dist = sqrt((x-self.x)**2 + (y-self.y)**2)	# Calcul de la distance centre - point d'intersection
 						if angle<=0:	# Si on va dans un sens
 							if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
