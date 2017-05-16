@@ -9,7 +9,7 @@ class Rayons():
 		self.x = x
 		self.y = y
 		self.poly=poly
-		self.nbRayons = 10 # Nb de rayons tracés (dans les 2 sens)
+		self.nbRayons = 2000 # Nb de rayons tracés (dans les 2 sens)
 		self.tag = "Rayon"
 
 		self.drawRayons()
@@ -20,32 +20,34 @@ class Rayons():
 		a1 = [self.x,self.y] # Centre d'application
 
 		for pol in self.poly:
-			for k in range(len(pol.points)):
+					for k in range(len(pol.points)):
 
-				a2 = [pol.points[k].x,pol.points[k].y]				
-				#self.can.create_line(self.x,self.y,a2[0],a2[1],fill="red",tag=self.tag)
-
-
-				rays = self.testRay(a1,a2)
-				ray = rays[0]
-				if ray!=None:
-					if(ray[0] == a2[0] and ray[1] == a2[1]):
-						#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-						self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
+						a2 = [pol.points[k].x,pol.points[k].y]				
+						#self.can.create_line(self.x,self.y,a2[0],a2[1],fill="red",tag=self.tag)
 
 
-				ray = rays[1]
-				if ray!=None:
-					if(ray[0] == a2[0] and ray[1] == a2[1]):
-						#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-						self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
+						rays = self.testRay(a1,a2)
+						ray = rays[0]
+						if ray!=None:
+							if(ray[0] == a2[0] and ray[1] == a2[1]):
+								#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+								self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
+
+
+						ray = rays[1]
+						if ray!=None:
+							if(ray[0] == a2[0] and ray[1] == a2[1]):
+								#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+								self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
+
+
 
 		self.can.create_oval(self.x-1,self.y-1,self.x+1,self.y+1,fill="red",outline="black",width=1,tag=self.tag)	# Affichage du centre
 
 		#DEBUG
 		if 1:
-			#self.can.create_line(self.x-800,self.y,self.x+800,self.y,dash=True,tag=self.tag)
-			#self.can.create_line(self.x,self.y-800,self.x,self.y+800,dash=True,tag=self.tag)
+			self.can.create_line(self.x-800,self.y,self.x+800,self.y,dash=True,tag=self.tag)
+			self.can.create_line(self.x,self.y-800,self.x,self.y+800,dash=True,tag=self.tag)
 			self.can.create_text(50,50,text="cadran 3")
 			self.can.create_text(750,50,text="cadran 4")
 			self.can.create_text(50,750,text="cadran 2")
@@ -73,16 +75,52 @@ class Rayons():
 					y = (det1 * a1[1] + det2 * a2[1])/(det1+det2)
 
 					angle = atan2(self.x - x,self.y - y)
-					#self.can.create_oval(x-4,y-4,x+4,y+4,fill="yellow",outline="black",width=2,tag=self.tag)
-					'''if (b1[0] == x and b1[1] == y) or (b2[0] == x or  b2[1] == y):
-						if b1[0] == x:
-							print([x,y],b1)
-							ray1 = [x,y,angle]
-						elif b2[0]==x:
-							print([x,y],b2)'''
 
-					if ((b1[0] >= x >= b2[0]) or (b1[0] <= x <= b2[0])) and ((b1[1] >= y >= b2[1]) or (b1[1] <= y <= b2[1])): # Vérification qu'on est dans le segment ou sur le bord | /!\ MODIFICATION PLUS TARD
-						#self.can.create_oval(x-4,y-4,x+4,y+4,fill="yellow",outline="black",width=2,tag=self.tag)
+					if (b1[0] == int(x) and b1[1] == int(y)) or (b2[0] == int(x) and  b2[1] == int(y)):
+						if b1[0] == int(x) and b1[1] == int(y):
+							angle1 = atan2(self.x - b2[0],self.y - b2[1])
+							angle2 = atan2(self.x - pol.points[k-2].x, self.y - pol.points[k-2].y)
+
+						elif b2[0] == int(x) and  b2[1] == int(y):
+							angle1 = atan2(self.x - b1[0],self.y - b1[1])
+
+							if k<len(pol.points)-1: # Si on est pas en bout de tableau
+								angle2 = atan2(self.x - pol.points[k+1].x, self.y - pol.points[k+1].y)
+							else:
+								angle2 = atan2(self.x - pol.points[0].x, self.y - pol.points[0].y)
+
+						print(angle)
+						if ((angle1<0 and angle2>0) or (angle1>0 and angle2<0)) and not (-pi/2 < angle < pi/2):
+							
+							if angle < 0:
+								if angle1 > 0:
+									angle1=-pi
+								elif angle2 > 0:
+									angle2=-pi
+							else:
+								if angle1 < 0:
+									angle1=pi
+								elif angle2 < 0:
+									angle2=pi
+
+						if angle1<angle<angle2 or angle1>angle>angle2:
+							#print("ça passe pas : " + str(round(angle1,2)) + ' ' + str(round(angle,2)) + ' ' + str(round(angle2,2)))
+							dist = sqrt((x-self.x)**2 + (y-self.y)**2)
+							if angle<=0:	# Si on va dans un sens
+								if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
+									minDist1 = dist
+									ray1 = [x,y,angle]
+
+							elif angle >0:	# Si on va dans l'autre sens
+								if dist < minDist2 or minDist2 == -1:	# Si initialisation ou distance minimale
+									minDist2 = dist
+									ray2 = [x,y,angle]
+
+						else:
+							#print("ça passe")
+							pass
+
+					if ((b1[0] + 1 > x > b2[0] - 1) or (b1[0] - 1 < x < b2[0] + 1)) and ((b1[1] + 1 > y > b2[1] - 1) or (b1[1] - 1 < y < b2[1] +1)): # Vérification qu'on est dans le segment ou sur le bord | /!\ MODIFICATION PLUS TARD
 						dist = sqrt((x-self.x)**2 + (y-self.y)**2)	# Calcul de la distance centre - point d'intersection
 						if angle<=0:	# Si on va dans un sens
 							if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
