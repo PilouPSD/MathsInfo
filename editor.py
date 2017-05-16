@@ -19,31 +19,27 @@ class Rayons():
 		
 		a1 = [self.x,self.y] # Centre d'application
 
-		for i in range(self.nbRayons):
-			xpt = int(1000*cos(i*pi/self.nbRayons))
-			ypt = int(1000*sin(i*pi/self.nbRayons))
+		for pol in self.poly:
+					for k in range(len(pol.points)):
+
+						a2 = [pol.points[k].x,pol.points[k].y]				
+						#self.can.create_line(self.x,self.y,a2[0],a2[1],fill="red",tag=self.tag)
 
 
-			a2 = [self.x+xpt,self.y+ypt] # Point sur la droite du rayon
+						rays = self.testRay(a1,a2)
+						ray = rays[0]
+						if ray!=None:
+							if(ray[0] == a2[0] and ray[1] == a2[1]):
+								#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+								self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
 
-			rays = self.testRay(a1,a2)
 
-			for i in range(len(rays)):
-				ray = rays[i]
-				if ray!=None:
-					#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-					self.can.create_line(self.x,self.y,ray[0],ray[1],fill="yellow",tag=self.tag)	# Affichage du rayon
-				else:
-					if xpt<=0:
-						if i==0:	# Cadran 3
-							self.can.create_line(self.x,self.y,self.x-xpt,self.y-ypt,fill="yellow",tag=self.tag)
-						else:		# Cadran 2
-							self.can.create_line(self.x,self.y,self.x+xpt,self.y+ypt,fill="yellow",tag=self.tag)
-					else:
-						if i==1:	# Cadran 4
-							self.can.create_line(self.x,self.y,self.x-xpt,self.y-ypt,fill="yellow",tag=self.tag)
-						else:		# Cadran 1
-							self.can.create_line(self.x,self.y,self.x+xpt,self.y+ypt,fill="yellow",tag=self.tag)
+						ray = rays[1]
+						if ray!=None:
+							if(ray[0] == a2[0] and ray[1] == a2[1]):
+								#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+								self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
+
 
 
 		self.can.create_oval(self.x-1,self.y-1,self.x+1,self.y+1,fill="red",outline="black",width=1,tag=self.tag)	# Affichage du centre
@@ -98,9 +94,20 @@ class Rayons():
 								angle2 = atan2(self.x - pol.points[0].x, self.y - pol.points[0].y)
 							print(round(angle1,2),round(angle2,2))
 						if angle1<angle<angle2 or angle1>angle>angle2:
-							print("ça passe")
-						else:
 							print("ça passe pas")
+							dist = sqrt((x-self.x)**2 + (y-self.y)**2)
+							if angle<=0:	# Si on va dans un sens
+								if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
+									minDist1 = dist
+									ray1 = [x,y,angle]
+
+							elif angle >0:	# Si on va dans l'autre sens
+								if dist < minDist2 or minDist2 == -1:	# Si initialisation ou distance minimale
+									minDist2 = dist
+									ray2 = [x,y,angle]
+
+						else:
+							print("ça passe")
 
 
 					if ((b1[0] > x > b2[0]) or (b1[0] < x < b2[0])) and ((b1[1] > y > b2[1]) or (b1[1] < y < b2[1])): # Vérification qu'on est dans le segment ou sur le bord | /!\ MODIFICATION PLUS TARD
