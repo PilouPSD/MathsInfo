@@ -3,15 +3,13 @@ from math import cos, sin, pi, atan2, sqrt
 
 types = {"default":"snow","mirroir":"light blue","obstacle":"black","obstacle_rouge":"red","obstacle_bleu":"blue"}
 
-# Pierre
-
 class Rayons():
 	def __init__(self,can,x,y,poly):
 		self.can = can
 		self.x = x
 		self.y = y
 		self.poly=poly
-		self.nbRayons = 1000 # Nb de rayons tracés (dans les 2 sens)
+		self.nbRayons = 10 # Nb de rayons tracés (dans les 2 sens)
 		self.tag = "Rayon"
 
 		self.drawRayons()
@@ -21,42 +19,31 @@ class Rayons():
 		
 		a1 = [self.x,self.y] # Centre d'application
 
-		for i in range(self.nbRayons):
-			xpt = int(1000*cos(i*pi/self.nbRayons))
-			ypt = int(1000*sin(i*pi/self.nbRayons))
+		for pol in self.poly:
+			for k in range(len(pol.points)):
+
+				a2 = [pol.points[k].x,pol.points[k].y]				
+				#self.can.create_line(self.x,self.y,a2[0],a2[1],fill="red",tag=self.tag)
 
 
-			a2 = [self.x+xpt,self.y+ypt] # Point sur la droite du rayon
-
-			rays = self.testRay(a1,a2)
-
-			for i in range(len(rays)):
-				ray = rays[i]
+				rays = self.testRay(a1,a2)
+				ray = rays[0]
 				if ray!=None:
-					#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-					self.can.create_line(self.x,self.y,ray[0],ray[1],fill="yellow",tag=self.tag)	# Affichage du rayon
-				else:
-					if xpt<=0:
-						if i==0:	# Cadran 3
-							#print("orange")
-							self.can.create_line(self.x,self.y,self.x-xpt,self.y-ypt,fill="yellow",tag=self.tag)
-						else:		# Cadran 2
-							#print("jaune")
-							self.can.create_line(self.x,self.y,self.x+xpt,self.y+ypt,fill="yellow",tag=self.tag)
-					else:
-						if i==1:	# Cadran 4
-							#print("bleu")
-							self.can.create_line(self.x,self.y,self.x-xpt,self.y-ypt,fill="yellow",tag=self.tag)
-						else:		# Cadran 1
-							#print("rouge", end="	")
-							#print(self.y,ypt, self.x, xpt,self.y-ypt / self.x-xpt)
-							self.can.create_line(self.x,self.y,self.x+xpt,self.y+ypt,fill="yellow",tag=self.tag)
+					if(ray[0] == a2[0] and ray[1] == a2[1]):
+						#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+						self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
 
+
+				ray = rays[1]
+				if ray!=None:
+					if(ray[0] == a2[0] and ray[1] == a2[1]):
+						#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+						self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
 
 		self.can.create_oval(self.x-1,self.y-1,self.x+1,self.y+1,fill="red",outline="black",width=1,tag=self.tag)	# Affichage du centre
 
 		#DEBUG
-		if 0:
+		if 1:
 			#self.can.create_line(self.x-800,self.y,self.x+800,self.y,dash=True,tag=self.tag)
 			#self.can.create_line(self.x,self.y-800,self.x,self.y+800,dash=True,tag=self.tag)
 			self.can.create_text(50,50,text="cadran 3")
@@ -86,7 +73,15 @@ class Rayons():
 					y = (det1 * a1[1] + det2 * a2[1])/(det1+det2)
 
 					angle = atan2(self.x - x,self.y - y)
-					if (((b1[0] >= x >= b2[0]) or (b1[0] <= x <= b2[0])) and ((b1[1] >= y >= b2[1]) or (b1[1] <= y <= b2[1]))): # Vérification qu'on est dans le segment ou sur le bord | /!\ MODIFICATION PLUS TARD
+					#self.can.create_oval(x-4,y-4,x+4,y+4,fill="yellow",outline="black",width=2,tag=self.tag)
+					'''if (b1[0] == x and b1[1] == y) or (b2[0] == x or  b2[1] == y):
+						if b1[0] == x:
+							print([x,y],b1)
+							ray1 = [x,y,angle]
+						elif b2[0]==x:
+							print([x,y],b2)'''
+
+					if ((b1[0] >= x >= b2[0]) or (b1[0] <= x <= b2[0])) and ((b1[1] >= y >= b2[1]) or (b1[1] <= y <= b2[1])): # Vérification qu'on est dans le segment ou sur le bord | /!\ MODIFICATION PLUS TARD
 						#self.can.create_oval(x-4,y-4,x+4,y+4,fill="yellow",outline="black",width=2,tag=self.tag)
 						dist = sqrt((x-self.x)**2 + (y-self.y)**2)	# Calcul de la distance centre - point d'intersection
 						if angle<=0:	# Si on va dans un sens
