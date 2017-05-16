@@ -45,7 +45,7 @@ class Rayons():
 		self.can.create_oval(self.x-1,self.y-1,self.x+1,self.y+1,fill="red",outline="black",width=1,tag=self.tag)	# Affichage du centre
 
 		#DEBUG
-		if 0:
+		if 1:
 			self.can.create_line(self.x-800,self.y,self.x+800,self.y,dash=True,tag=self.tag)
 			self.can.create_line(self.x,self.y-800,self.x,self.y+800,dash=True,tag=self.tag)
 			self.can.create_text(50,50,text="cadran 3")
@@ -77,24 +77,35 @@ class Rayons():
 					angle = atan2(self.x - x,self.y - y)
 
 					if (b1[0] == int(x) and b1[1] == int(y)) or (b2[0] == int(x) and  b2[1] == int(y)):
-						if b1[0] == int(x):
-							print([int(x),int(y)],b1)
+						if b1[0] == int(x) and b1[1] == int(y):
 							angle1 = atan2(self.x - b2[0],self.y - b2[1])
 							angle2 = atan2(self.x - pol.points[k-2].x, self.y - pol.points[k-2].y)
 
-							print(round(angle1,2),round(angle2,2))
-
-						elif b2[0]==int(x):
-							print([int(x),int(y)],b2)
+						elif b2[0] == int(x) and  b2[1] == int(y):
 							angle1 = atan2(self.x - b1[0],self.y - b1[1])
 
 							if k<len(pol.points)-1: # Si on est pas en bout de tableau
 								angle2 = atan2(self.x - pol.points[k+1].x, self.y - pol.points[k+1].y)
 							else:
 								angle2 = atan2(self.x - pol.points[0].x, self.y - pol.points[0].y)
-							print(round(angle1,2),round(angle2,2))
+
+						print(angle1,angle,angle2)
+						if (angle1<0 and angle2>0) or (angle1>0 and angle2<0):
+							
+							if angle < 0:
+								if angle1 > 0:
+									angle1=-pi
+								elif angle2 > 0:
+									angle2=-pi
+							else:
+								if angle1 < 0:
+									angle1=pi
+								elif angle2 < 0:
+									angle2=pi
+
+
 						if angle1<angle<angle2 or angle1>angle>angle2:
-							print("ça passe pas")
+							#print("ça passe pas : " + str(round(angle1,2)) + ' ' + str(round(angle,2)) + ' ' + str(round(angle2,2)))
 							dist = sqrt((x-self.x)**2 + (y-self.y)**2)
 							if angle<=0:	# Si on va dans un sens
 								if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
@@ -107,11 +118,10 @@ class Rayons():
 									ray2 = [x,y,angle]
 
 						else:
-							print("ça passe")
-
+							#print("ça passe")
+							pass
 
 					if ((b1[0] > x > b2[0]) or (b1[0] < x < b2[0])) and ((b1[1] > y > b2[1]) or (b1[1] < y < b2[1])): # Vérification qu'on est dans le segment ou sur le bord | /!\ MODIFICATION PLUS TARD
-						#self.can.create_oval(x-4,y-4,x+4,y+4,fill="yellow",outline="black",width=2,tag=self.tag)
 						dist = sqrt((x-self.x)**2 + (y-self.y)**2)	# Calcul de la distance centre - point d'intersection
 						if angle<=0:	# Si on va dans un sens
 							if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
