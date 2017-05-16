@@ -9,7 +9,7 @@ class Rayons():
 		self.x = x
 		self.y = y
 		self.poly=poly
-		self.nbRayons = 1000 # Nb de rayons tracés (dans les 2 sens)
+		self.nbRayons = 2000 # Nb de rayons tracés (dans les 2 sens)
 		self.tag = "Rayon"
 
 		self.drawRayons()
@@ -36,18 +36,13 @@ class Rayons():
 				else:
 					if xpt<=0:
 						if i==0:	# Cadran 3
-							#print("orange")
 							self.can.create_line(self.x,self.y,self.x-xpt,self.y-ypt,fill="yellow",tag=self.tag)
 						else:		# Cadran 2
-							#print("jaune")
 							self.can.create_line(self.x,self.y,self.x+xpt,self.y+ypt,fill="yellow",tag=self.tag)
 					else:
 						if i==1:	# Cadran 4
-							#print("bleu")
 							self.can.create_line(self.x,self.y,self.x-xpt,self.y-ypt,fill="yellow",tag=self.tag)
 						else:		# Cadran 1
-							#print("rouge", end="	")
-							#print(self.y,ypt, self.x, xpt,self.y-ypt / self.x-xpt)
 							self.can.create_line(self.x,self.y,self.x+xpt,self.y+ypt,fill="yellow",tag=self.tag)
 
 
@@ -88,8 +83,25 @@ class Rayons():
 					if (b1[0] == int(x) and b1[1] == int(y)) or (b2[0] == int(x) and  b2[1] == int(y)):
 						if b1[0] == int(x):
 							print([int(x),int(y)],b1)
+							angle1 = atan2(self.x - b2[0],self.y - b2[1])
+							angle2 = atan2(self.x - pol.points[k-2].x, self.y - pol.points[k-2].y)
+
+							print(round(angle1,2),round(angle2,2))
+
 						elif b2[0]==int(x):
 							print([int(x),int(y)],b2)
+							angle1 = atan2(self.x - b1[0],self.y - b1[1])
+
+							if k<len(pol.points)-1: # Si on est pas en bout de tableau
+								angle2 = atan2(self.x - pol.points[k+1].x, self.y - pol.points[k+1].y)
+							else:
+								angle2 = atan2(self.x - pol.points[0].x, self.y - pol.points[0].y)
+							print(round(angle1,2),round(angle2,2))
+						if (angle1<angle and angle2<angle) or (angle1>angle and angle2>angle):
+							print("ça passe")
+						else:
+							print("ça passe pas")
+
 
 					if ((b1[0] > x > b2[0]) or (b1[0] < x < b2[0])) and ((b1[1] > y > b2[1]) or (b1[1] < y < b2[1])): # Vérification qu'on est dans le segment ou sur le bord | /!\ MODIFICATION PLUS TARD
 						#self.can.create_oval(x-4,y-4,x+4,y+4,fill="yellow",outline="black",width=2,tag=self.tag)
