@@ -89,8 +89,8 @@ class Rayons():
 							else:
 								angle2 = atan2(self.x - pol.points[0].x, self.y - pol.points[0].y)
 
-						print(angle1,angle,angle2)
-						if (angle1<0 and angle2>0) or (angle1>0 and angle2<0):
+						print(angle)
+						if ((angle1<0 and angle2>0) or (angle1>0 and angle2<0)) and not (-pi/2 < angle < pi/2):
 							
 							if angle < 0:
 								if angle1 > 0:
@@ -102,7 +102,6 @@ class Rayons():
 									angle1=pi
 								elif angle2 < 0:
 									angle2=pi
-
 
 						if angle1<angle<angle2 or angle1>angle>angle2:
 							#print("ça passe pas : " + str(round(angle1,2)) + ' ' + str(round(angle,2)) + ' ' + str(round(angle2,2)))
