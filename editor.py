@@ -3,6 +3,8 @@ from math import cos, sin, pi, atan2, sqrt
 
 types = {"default":"snow","mirroir":"light blue","obstacle":"black","obstacle_rouge":"red","obstacle_bleu":"blue"}
 
+# Nathan
+
 class Rayons():
 	def __init__(self,can,x,y,poly):
 		self.can = can
