@@ -1,5 +1,5 @@
 from tkinter import *
-from math import cos, sin, pi, atan2, sqrt
+from math import cos, sin, pi, atan2,acos, sqrt
 from time import sleep
 types = {"default":"snow","mirroir":"light blue","obstacle":"black","obstacle_rouge":"red","obstacle_bleu":"blue"}
 
@@ -30,10 +30,13 @@ class Rayons():
 				ray = rays[0]
 				if ray!=None:
 					if(ray[0] == a2[0] and ray[1] == a2[1]):
-						x = self.x - 1000 * sin(ray[2])
-						y = self.y - 1000 * cos(ray[2])
-						#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-						self.can.create_line(self.x,self.y,x,y,fill="black",tag=self.tag)	# Affichage du rayon
+						if(ray[2] != 100):
+							x = self.x - 1000 * sin(ray[2])
+							y = self.y - 1000 * cos(ray[2])
+							#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+							self.can.create_line(self.x,self.y,x,y,fill="green",tag=self.tag)	# Affichage du rayon
+						else:
+							self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
 					else:						
 						self.can.create_line(self.x,self.y,ray[0],ray[1],fill="red",tag=self.tag)	# Affichage du rayon
 
@@ -41,10 +44,14 @@ class Rayons():
 				ray = rays[1]
 				if ray!=None:
 					if(ray[0] == a2[0] and ray[1] == a2[1]):
-						x = self.x - 1000 * sin(ray[2])
-						y = self.y - 1000 * cos(ray[2])
-						#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-						self.can.create_line(self.x,self.y,x,y,fill="black",tag=self.tag)	# Affichage du rayon
+						if(ray[2] != 100):
+							x = self.x - 1000 * sin(ray[2])
+							y = self.y - 1000 * cos(ray[2])
+							#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+							self.can.create_line(self.x,self.y,x,y,fill="green",tag=self.tag)	# Affichage du rayon
+						else:
+							self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
+
 					else:						
 						self.can.create_line(self.x,self.y,ray[0],ray[1],fill="red",tag=self.tag)	# Affichage du rayon
 
@@ -65,12 +72,43 @@ class Rayons():
 		minDist2 = -1
 		ray1 = None
 		ray2 = None
+		mem = True
 
 		for pol in self.poly: # Pour chaque polygone
 			for k in range(len(pol.points)):
 				# On prend 2 points de chaque droite formée par le polygone (extrémités de chaque segment)
-				b1 = [pol.points[k-1].x,pol.points[k-1].y]
-				b2 = [pol.points[k].x,pol.points[k].y]
+
+				b1 = [pol.points[k-1].x,pol.points[k-1].y]		#b
+				b2 = [pol.points[k].x,pol.points[k].y]			#a
+				b3 = [pol.points[k-2].x,pol.points[k-2].y]		#c
+				'''
+				a = sqrt((b1[0] - a1[0])**2 + (b1[1] - a1[1])**2)
+				b = sqrt((b1[0] - a2[0])**2 + (b1[1] - a2[1])**2)
+				c = sqrt((a2[0] - a1[0])**2 + (a2[1] - a1[1])**2)
+				alpha1 = acos((b**2 + c**2 -a**2)/(2*b*c))
+
+				if((b1[1] - a2[1]) > (a1[1] - a2[1])):
+					alpha1 = - alpha1
+				print("a1: ", alpha1)
+
+
+				if(alpha1 >= pi):
+					alpha1 = 2 * pi - alpha1
+
+
+				a = sqrt((b3[0] - a1[0])**2 + (b3[1] - a1[1])**2)
+				b = sqrt((b3[0] - a2[0])**2 + (b3[1] - a2[1])**2)
+				c = sqrt((a2[0] - a1[0])**2 + (a2[1] - a1[1])**2)
+				alpha2 = acos((b**2 + c**2 -a**2)/(2*b*c))
+
+				if((b3[1] - a2[1]) > (a1[1] - a2[1])):
+					alpha2 = - alpha2
+				print("a2: ", alpha2)
+
+
+				if(alpha2 >= pi):
+					alpha2 = 2 * pi - alpha2
+				'''
 
 				det1 = b1[1]*(a2[0]-b2[0]) + b2[1]*(b1[0]-a2[0]) + a2[1]*(b2[0]-b1[0])	# |B1B2A2|
 				det2 = b2[1]*(a1[0]-b1[0]) + b1[1]*(b2[0]-a1[0]) + a1[1]*(b1[0]-b2[0])	# |B2B1A1|
@@ -80,33 +118,49 @@ class Rayons():
 					x = (det1 * a1[0] + det2 * a2[0])/(det1+det2)
 					y = (det1 * a1[1] + det2 * a2[1])/(det1+det2)
 
-					angle = atan2(self.x - x,self.y - y)
+					angle = atan2(a1[0] - x,a1[1]- y)
 
 					dist = sqrt((x-self.x)**2 + (y-self.y)**2)	# Calcul de la distance centre - point d'intersection
 					if ((b1[0] >= x >= b2[0]) or (b1[0] <= x <= b2[0])) and ((b1[1] >=y >= b2[1]) or (b1[1] <= y <= b2[1])):
 						if(x == a2[0] and (y == a2[1])):
-							self.can.create_oval(x-4,y-4,x+4,y+4,fill="red",outline="black",width=2,tag=self.tag)
+							angle1 = atan2(a1[0] - b1[0],a1[1] - b1[1])
+							angle2 = atan2(a1[0] - b3[0],a1[1] - b3[1])
+
+
+
+							if (angle2 > angle > angle1) or (angle2 < angle < angle1):
+								print("suite1", end="  ")
+								mem = True #trais qui s'arrete	
+							else:	
+								mem = False	# trais qui continue
+								print("suite2", end="  ")
+
 							if angle<=0:	# Si on va dans un sens
 								if(dist < minDist1)or(minDist1 == -1):
 									ray1 = [x,y,angle]
+									if(mem):
+										print(a2)
+										minDist1 = dist
+										ray1[2] = 100
 							elif angle >0:	# Si on va dans l'autre sens
 								if(dist < minDist2)or(minDist2 == -1):
 									ray2 = [x,y,angle]
+									if(mem):
+										print(a2)
+										minDist2 = dist
+										ray2[2] = 100
 							
 						else:
-							self.can.create_oval(x-4,y-4,x+4,y+4,fill="yellow",outline="black",width=2,tag=self.tag)
 							if angle<=0:	# Si on va dans un sens
 								if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
 									minDist1 = dist
 									ray1 = [x,y,angle]
-									self.can.create_oval(x-4,y-4,x+4,y+4,fill="yellow",outline="blue",width=2,tag=self.tag)
-									print("&									1 :				:	", ray1)
 							elif angle >0:	# Si on va dans l'autre sens
 								if dist < minDist2 or minDist2 == -1:	# Si initialisation ou distance minimale
 									minDist2 = dist
 									ray2 = [x,y,angle]
-									print("&									2 :				:	", ray2)
-		print(ray1,ray2)
+		print(ray1, ray2)
+
 		return [ray1, ray2]
 
 	def deleteRayons(self):
