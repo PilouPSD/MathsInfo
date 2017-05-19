@@ -25,6 +25,10 @@ class Rayons():
 				a2 = [pol.points[k].x,pol.points[k].y]				
 				#self.can.create_line(self.x,self.y,a2[0],a2[1],fill="red",tag=self.tag)
 
+				x = self.x + 1000 * sin(0)
+				y = self.y + 1000 * cos(0)
+				#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+				self.can.create_line(self.x,self.y,x,y,fill="green",tag=self.tag)	# Affichage du rayon
 
 				rays = self.testRay(a1,a2)
 				ray = rays[0]
@@ -118,49 +122,111 @@ class Rayons():
 					x = (det1 * a1[0] + det2 * a2[0])/(det1+det2)
 					y = (det1 * a1[1] + det2 * a2[1])/(det1+det2)
 
-					angle = atan2(a1[0] - x,a1[1]- y)
+					angle = atan2(x - a1[0],y - a1[1])
 
 					dist = sqrt((x-self.x)**2 + (y-self.y)**2)	# Calcul de la distance centre - point d'intersection
 					if ((b1[0] >= x >= b2[0]) or (b1[0] <= x <= b2[0])) and ((b1[1] >=y >= b2[1]) or (b1[1] <= y <= b2[1])):
 						if(x == a2[0] and (y == a2[1])):
-							angle1 = atan2(a1[0] - b1[0],a1[1] - b1[1])
-							angle2 = atan2(a1[0] - b3[0],a1[1] - b3[1])
+							angle1 = atan2(b1[0] - a1[0],b1[1] - a1[1])
+							angle2 = atan2(b3[0] - a1[0],b3[1] - a1[1])
+							de = 0
+
+							if(angle1 > 0 and angle2 > 0 and angle < 0):
+								angle = angle + pi
+								de = 1
+							
+							if(angle1 < 0 and angle2 > 0 and angle > 0):
+								if(angle < angle2):
+									print("1", angle, angle1, angle2)
+									if(angle1 < pi / 2):
+										angle1 = 0
+									else:
+										angle1 = pi
+								else:
+									angle1 = angle1 + 2*pi
+							
+							if(angle1 > 0 and angle2 < 0 and angle > 0):
+								if(angle > angle1):
+									print("2", angle, angle1, angle2)
+									if(angle2 < pi / 2):
+										angle2 = 0
+									else:
+										angle2 = pi
+
+								else:
+									angle2 = angle2 + 2*pi
 
 
 
+
+
+
+							if(angle1 < 0 and angle2 < 0 and angle > 0):
+								angle = angle - pi
+								de = 2
+							
+							if(angle1 > 0 and angle2 < 0 and angle < 0):
+								if(angle < angle2):
+									print("3", angle, angle1, angle2)
+									if(angle1 < pi / 2):
+										angle1 = 0
+									else:
+										angle1 = pi
+								else:
+									angle1 = angle1 - 2*pi
+							
+							if(angle1 < 0 and angle2 > 0 and angle < 0):
+								if(angle > angle1):
+									print("4", angle, angle1, angle2)
+									angle2 = 0
+								else:
+									angle2 = angle2 - 2*pi
+							'''
+							if(angle1 < 0):
+								angle1 = angle1 + pi
+							if(angle < 0):
+								angle = angle + pi
+								de = 1
+							else:
+								de = 0
+
+							if(angle2 < 0):
+								angle2 = angle2 + pi'''
+
+
+							print(angle2 > angle > angle1, angle2 < angle < angle1, angle, angle1, angle2, x, y)
 							if (angle2 > angle > angle1) or (angle2 < angle < angle1):
-								print("suite1", end="  ")
 								mem = True #trais qui s'arrete	
 							else:	
 								mem = False	# trais qui continue
-								print("suite2", end="  ")
 
-							if angle<=0:	# Si on va dans un sens
+							if(de == 1):
+								angle = angle - pi
+							elif(de == 2):
+								angle = angle + pi
+							if angle<= 0:	# Si on va dans un sens
 								if(dist < minDist1)or(minDist1 == -1):
-									ray1 = [x,y,angle]
+									ray1 = [x,y,angle + pi]
 									if(mem):
-										print(a2)
 										minDist1 = dist
 										ray1[2] = 100
-							elif angle >0:	# Si on va dans l'autre sens
+							else:	# Si on va dans l'autre sens
 								if(dist < minDist2)or(minDist2 == -1):
-									ray2 = [x,y,angle]
+									ray2 = [x,y,angle + pi]
 									if(mem):
-										print(a2)
 										minDist2 = dist
 										ray2[2] = 100
-							
+						
 						else:
+
 							if angle<=0:	# Si on va dans un sens
 								if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
 									minDist1 = dist
 									ray1 = [x,y,angle]
-							elif angle >0:	# Si on va dans l'autre sens
+							else:	# Si on va dans l'autre sens
 								if dist < minDist2 or minDist2 == -1:	# Si initialisation ou distance minimale
 									minDist2 = dist
 									ray2 = [x,y,angle]
-		print(ray1, ray2)
-
 		return [ray1, ray2]
 
 	def deleteRayons(self):
