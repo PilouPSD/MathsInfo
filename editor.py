@@ -1,139 +1,7 @@
 from tkinter import *
-from math import cos, sin, pi, atan2, sqrt
+from rays_handler import *
 
 types = {"default":"snow","mirroir":"light blue","obstacle":"black","obstacle_rouge":"red","obstacle_bleu":"blue"}
-
-class Rayons():
-	def __init__(self,can,x,y,poly):
-		self.can = can
-		self.x = x
-		self.y = y
-		self.poly=poly
-		self.nbRayons = 2000 # Nb de rayons tracés (dans les 2 sens)
-		self.tag = "Rayon"
-
-		self.drawRayons()
-
-	def drawRayons(self):
-		self.can.delete(self.tag)	# Supression des anciens rayons
-		
-		a1 = [self.x,self.y] # Centre d'application
-
-		for pol in self.poly:
-					for k in range(len(pol.points)):
-
-						a2 = [pol.points[k].x,pol.points[k].y]				
-						#self.can.create_line(self.x,self.y,a2[0],a2[1],fill="red",tag=self.tag)
-
-						rays = self.testRay(a1,a2)
-						ray = rays[0]
-						if ray!=None:
-							if(ray[0] == a2[0] and ray[1] == a2[1]):
-								#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-								self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
-
-						ray = rays[1]
-						if ray!=None:
-							if(ray[0] == a2[0] and ray[1] == a2[1]):
-								#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-								self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
-
-
-
-		self.can.create_oval(self.x-1,self.y-1,self.x+1,self.y+1,fill="red",outline="black",width=1,tag=self.tag)	# Affichage du centre
-
-		#DEBUG
-		if 1:
-			self.can.create_line(self.x-800,self.y,self.x+800,self.y,dash=True,tag=self.tag)
-			self.can.create_line(self.x,self.y-800,self.x,self.y+800,dash=True,tag=self.tag)
-			self.can.create_text(50,50,text="cadran 3")
-			self.can.create_text(750,50,text="cadran 4")
-			self.can.create_text(50,750,text="cadran 2")
-			self.can.create_text(750,750,text="cadran 1")
-
-
-	def testRay(self,a1,a2):
-		minDist1 = -1
-		minDist2 = -1
-		ray1 = None
-		ray2 = None
-
-		for pol in self.poly: # Pour chaque polygone
-			for k in range(len(pol.points)):
-				# On prend 2 points de chaque droite formée par le polygone (extrémités de chaque segment)
-				b1 = [pol.points[k-1].x,pol.points[k-1].y]
-				b2 = [pol.points[k].x,pol.points[k].y]
-
-				det1 = b1[1]*(a2[0]-b2[0]) + b2[1]*(b1[0]-a2[0]) + a2[1]*(b2[0]-b1[0])	# |B1B2A2|
-				det2 = b2[1]*(a1[0]-b1[0]) + b1[1]*(b2[0]-a1[0]) + a1[1]*(b1[0]-b2[0])	# |B2B1A1|
-
-				if det1+det2!=0: # On évite la division par 0
-					# Coordonées du point d'intersection
-					x = (det1 * a1[0] + det2 * a2[0])/(det1+det2)
-					y = (det1 * a1[1] + det2 * a2[1])/(det1+det2)
-
-					angle = atan2(self.x - x,self.y - y)
-
-					if (b1[0] == int(x) and b1[1] == int(y)) or (b2[0] == int(x) and  b2[1] == int(y)):
-						if b1[0] == int(x) and b1[1] == int(y):
-							angle1 = atan2(self.x - b2[0],self.y - b2[1])
-							angle2 = atan2(self.x - pol.points[k-2].x, self.y - pol.points[k-2].y)
-
-						elif b2[0] == int(x) and  b2[1] == int(y):
-							angle1 = atan2(self.x - b1[0],self.y - b1[1])
-
-							if k<len(pol.points)-1: # Si on est pas en bout de tableau
-								angle2 = atan2(self.x - pol.points[k+1].x, self.y - pol.points[k+1].y)
-							else:
-								angle2 = atan2(self.x - pol.points[0].x, self.y - pol.points[0].y)
-
-						print(angle)
-						if ((angle1<0 and angle2>0) or (angle1>0 and angle2<0)) and not (-pi/2 < angle < pi/2):
-							
-							if angle < 0:
-								if angle1 > 0:
-									angle1=-pi
-								elif angle2 > 0:
-									angle2=-pi
-							else:
-								if angle1 < 0:
-									angle1=pi
-								elif angle2 < 0:
-									angle2=pi
-
-						if angle1<angle<angle2 or angle1>angle>angle2:
-							#print("ça passe pas : " + str(round(angle1,2)) + ' ' + str(round(angle,2)) + ' ' + str(round(angle2,2)))
-							dist = sqrt((x-self.x)**2 + (y-self.y)**2)
-							if angle<=0:	# Si on va dans un sens
-								if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
-									minDist1 = dist
-									ray1 = [x,y,angle]
-
-							elif angle >0:	# Si on va dans l'autre sens
-								if dist < minDist2 or minDist2 == -1:	# Si initialisation ou distance minimale
-									minDist2 = dist
-									ray2 = [x,y,angle]
-
-						else:
-							#print("ça passe")
-							pass
-
-					if ((b1[0] > x > b2[0]) or (b1[0] < x < b2[0])) and ((b1[1] > y > b2[1]) or (b1[1] < y < b2[1])): # Vérification qu'on est dans le segment
-						dist = sqrt((x-self.x)**2 + (y-self.y)**2)	# Calcul de la distance centre - point d'intersection
-						if angle<=0:	# Si on va dans un sens
-							if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
-								minDist1 = dist
-								ray1 = [x,y,angle]
-
-						elif angle >0:	# Si on va dans l'autre sens
-							if dist < minDist2 or minDist2 == -1:	# Si initialisation ou distance minimale
-								minDist2 = dist
-								ray2 = [x,y,angle]
-
-		return [ray1, ray2]
-
-	def deleteRayons(self):
-		self.can.delete(self.tag)
 
 class Point():
 	def __init__(self,can,x,y,tag="points"):
@@ -254,6 +122,9 @@ class Editor(Tk):
 						self.moving = aux[sel]	# On récupère l'id du point qu'on bouge
 						self.selectedPoly =  self.getPolyId("poly"+self.main.gettags(aux[sel])[1]) # On récupère le tag id du polygone
 						break
+					elif self.main.gettags(aux[sel])[0] == "center":
+						self.moving = aux[sel]
+						self.selectedPoly = "rayon"
 
 		if self.doCreateRayons:	# On crée les rayons
 			self.rayons = Rayons(self.main,event.x,event.y,self.poly)
@@ -280,17 +151,20 @@ class Editor(Tk):
 			self.prevX,self.prevY = event.x,event.y
 			self.main.move(self.moving,dx,dy)		# Déplacement du point
 
-			for i in self.poly[self.selectedPoly].points:	# On sauvegarde les nouvelles coordonées du point
-				if i.id==self.moving:
-					i.x+=dx
-					i.y+=dy
+			if self.selectedPoly != "rayon":
+				for i in self.poly[self.selectedPoly].points:	# On sauvegarde les nouvelles coordonées du point
+					if i.id==self.moving:
+						i.x+=dx
+						i.y+=dy
+				self.poly[self.selectedPoly].effacer()	# Supression et recréation du polygone avec le nouveau point
+				self.poly[self.selectedPoly] = Polygone(self.main,self.poly[self.selectedPoly].tag,self.poly[self.selectedPoly].points,self.poly[self.selectedPoly].material)
 
-			self.poly[self.selectedPoly].effacer()	# Supression et recréation du polygone avec le nouveau point
-			self.poly[self.selectedPoly] = Polygone(self.main,self.poly[self.selectedPoly].tag,self.poly[self.selectedPoly].points,self.poly[self.selectedPoly].material)
-
-			for pol in self.poly:	# On remet le polygone de fond à l'arrière
-				if pol.material=="default":
-					self.main.tag_lower(pol.id)
+				for pol in self.poly:	# On remet le polygone de fond à l'arrière
+					if pol.material=="default":
+						self.main.tag_lower(pol.id)
+			else:
+				self.rayons.x += dx
+				self.rayons.y += dy
 
 			if self.rayonsDessin:
 				self.rayons.deleteRayons()
