@@ -1,5 +1,6 @@
 from tkinter import *
 from math import cos, sin, pi, atan2, sqrt
+from operator import itemgetter
 
 types = {"default":"snow","mirroir":"light blue","obstacle":"black","obstacle_rouge":"red","obstacle_bleu":"blue"}
 
@@ -11,6 +12,8 @@ class Rayons():
 		self.poly=poly
 		self.nbRayons = 2000 # Nb de rayons tracés (dans les 2 sens)
 		self.tag = "Rayon"
+
+		self.usefulPoints = []
 
 		self.drawRayons()
 
@@ -30,14 +33,21 @@ class Rayons():
 
 				for ray in rays:	# Affichage des rayons si ils existent
 					if ray!=None:
-						if(ray[0] == a2[0] and ray[1] == a2[1]):
-							#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-							self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
+						self.usefulPoints += [ray]
+						#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+						self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
 
-		self.can.create_oval(self.x-1,self.y-1,self.x+1,self.y+1,fill="red",outline="black",width=1,tag=self.tag)	# Affichage du centre
+		self.usefulPoints = sorted(self.usefulPoints, key=itemgetter(2))
+
+		#self.can.create_polygon([p[:2] for p in self.usefulPoints],fill="yellow",tag = self.tag)
+		self.can.create_oval(self.x-2,self.y-2,self.x+2,self.y+2,fill="red",outline="black",width=1,tag=self.tag)	# Affichage du centre
 
 		#DEBUG
-		if 1:
+		if 0:
+
+			for p in self.usefulPoints:
+				print(p[:2])
+
 			self.can.create_line(self.x-800,self.y,self.x+800,self.y,dash=True,tag=self.tag)
 			self.can.create_line(self.x,self.y-800,self.x,self.y+800,dash=True,tag=self.tag)
 			self.can.create_text(50,50,text="cadran 3")
@@ -68,8 +78,8 @@ class Rayons():
 
 					angle = atan2(self.x - x,self.y - y)
 
-
 					if ((b1[0] > x > b2[0]) or (b1[0] < x < b2[0])) and ((b1[1] > y > b2[1]) or (b1[1] < y < b2[1])): # Vérification qu'on est dans le segment
+
 						dist = sqrt((x-self.x)**2 + (y-self.y)**2)	# Calcul de la distance centre - point d'intersection
 						
 						if angle<=0:	# Si on va dans un sens
