@@ -44,8 +44,7 @@ class Rayons():
 		self.usefulPoints = sorted(self.usefulPoints, key=itemgetter(2))
 
 		#self.can.create_polygon([p[:2] for p in self.usefulPoints],fill="yellow",tag = self.tag)	# Affichage du polygone
-		self.can.create_oval(self.x-2,self.y-2,self.x+2,self.y+2,fill="red",outline="black",width=1,tag=self.tag)	# Affichage du centre
-		self.can.update()
+		self.can.create_oval(self.x-2,self.y-2,self.x+2,self.y+2,fill="red",outline="black",width=1,tag=["center",self.tag])	# Affichage du centre
 
 		#DEBUG
 		if 0:
@@ -267,6 +266,9 @@ class Editor(Tk):
 						self.moving = aux[sel]	# On récupère l'id du point qu'on bouge
 						self.selectedPoly =  self.getPolyId("poly"+self.main.gettags(aux[sel])[1]) # On récupère le tag id du polygone
 						break
+					elif self.main.gettags(aux[sel])[0] == "center":
+						self.moving = aux[sel]
+						self.selectedPoly = "rayon"
 
 		if self.doCreateRayons:	# On crée les rayons
 			self.rayons = Rayons(self.main,event.x,event.y,self.poly)
@@ -293,17 +295,20 @@ class Editor(Tk):
 			self.prevX,self.prevY = event.x,event.y
 			self.main.move(self.moving,dx,dy)		# Déplacement du point
 
-			for i in self.poly[self.selectedPoly].points:	# On sauvegarde les nouvelles coordonées du point
-				if i.id==self.moving:
-					i.x+=dx
-					i.y+=dy
+			if self.selectedPoly != "rayon":
+				for i in self.poly[self.selectedPoly].points:	# On sauvegarde les nouvelles coordonées du point
+					if i.id==self.moving:
+						i.x+=dx
+						i.y+=dy
+				self.poly[self.selectedPoly].effacer()	# Supression et recréation du polygone avec le nouveau point
+				self.poly[self.selectedPoly] = Polygone(self.main,self.poly[self.selectedPoly].tag,self.poly[self.selectedPoly].points,self.poly[self.selectedPoly].material)
 
-			self.poly[self.selectedPoly].effacer()	# Supression et recréation du polygone avec le nouveau point
-			self.poly[self.selectedPoly] = Polygone(self.main,self.poly[self.selectedPoly].tag,self.poly[self.selectedPoly].points,self.poly[self.selectedPoly].material)
-
-			for pol in self.poly:	# On remet le polygone de fond à l'arrière
-				if pol.material=="default":
-					self.main.tag_lower(pol.id)
+				for pol in self.poly:	# On remet le polygone de fond à l'arrière
+					if pol.material=="default":
+						self.main.tag_lower(pol.id)
+			else:
+				self.rayons.x += dx
+				self.rayons.y += dy
 
 			if self.rayonsDessin:
 				self.rayons.deleteRayons()
