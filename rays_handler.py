@@ -42,7 +42,8 @@ class Rayons():
 		self.usefulPoints = sorted(self.usefulPoints, key=itemgetter(2))
 
 		#self.can.create_polygon([p[:2] for p in self.usefulPoints],fill="yellow",tag = self.tag)	# Affichage du polygone
-		self.can.create_oval(self.x-3,self.y-3,self.x+3,self.y+3,fill="red",outline="black",width=1,tag=["center",self.tag])	# Affichage du centre
+		self.can.create_oval(self.x-3,self.y-3,self.x+3,self.y+3,fill="red",outline="red",width=1,tag=["center",self.tag])	# Affichage du centre
+
 
 		#DEBUG
 		if 0:
