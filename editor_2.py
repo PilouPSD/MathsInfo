@@ -31,23 +31,26 @@ class Rayons():
 
 				rays = self.testRay(a1,a2)
 
-				for ray in rays:	# Affichage des rayons si ils existent
+				for ray in rays[:2]:	# Affichage des rayons si ils existent
 					if ray!=None:
 						self.usefulPoints += [ray]
-						#self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+						self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
 						self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
+
+				for passant in rays[2:]:
+					if passant != None:
+						self.usefulPoints+=[passant]
 
 		self.usefulPoints = sorted(self.usefulPoints, key=itemgetter(2))
 
-		#self.can.create_polygon([p[:2] for p in self.usefulPoints],fill="yellow",tag = self.tag)
+		#self.can.create_polygon([p[:2] for p in self.usefulPoints],fill="yellow",tag = self.tag)	# Affichage du polygone
 		self.can.create_oval(self.x-2,self.y-2,self.x+2,self.y+2,fill="red",outline="black",width=1,tag=self.tag)	# Affichage du centre
+		self.can.update()
 
 		#DEBUG
 		if 0:
-
 			for p in self.usefulPoints:
-				print(p[:2])
-
+				print(p)
 			self.can.create_line(self.x-800,self.y,self.x+800,self.y,dash=True,tag=self.tag)
 			self.can.create_line(self.x,self.y-800,self.x,self.y+800,dash=True,tag=self.tag)
 			self.can.create_text(50,50,text="cadran 3")
@@ -61,6 +64,8 @@ class Rayons():
 		minDist2 = -1
 		ray1 = None
 		ray2 = None
+		anglePassant1 = None # Uniquement utilisé pour sauver coordonées des points où le rayon passe par un angle mais continue
+		anglePassant2 = None
 
 		for pol in self.poly: # Pour chaque polygone
 			for k in range(len(pol.points)):
@@ -92,7 +97,7 @@ class Rayons():
 								minDist2 = dist
 								ray2 = [int(x),int(y),angle]
 
-					elif (b1[0] == int(x) and b1[1] == int(y)) or (b2[0] == int(x) and  b2[1] == int(y)): # L'intersection est un bout de segment
+					elif (b1[0] == int(x) and b1[1] == int(y)) or (b2[0] == int(x) and  b2[1] == int(y)): # Vérification qu'on est en bout de segment bout de segment
 						
 						if [int(x),int(y)]==b1:		# Si l'intersection est le premier point
 							angle1 = atan2(self.x - b2[0],self.y - b2[1])
@@ -105,7 +110,6 @@ class Rayons():
 								angle2 = atan2(self.x - pol.points[k+1].x, self.y - pol.points[k+1].y)
 							else:
 								angle2 = atan2(self.x - pol.points[0].x, self.y - pol.points[0].y)
-
 
 						if ((angle1<0 and angle2>0) or (angle1>0 and angle2<0)) and not (-pi/2 < angle < pi/2):	# Si les angles sont de signes opposés
 							
@@ -132,13 +136,14 @@ class Rayons():
 								if dist < minDist2 or minDist2 == -1:	# Si initialisation ou distance minimale
 									minDist2 = dist
 									ray2 = [int(x),int(y),angle]
-
 						else:
-							#print("ça passe")
-							pass
+							if angle<=0:	# Si on va dans un sens
+									anglePassant1 = [int(x),int(y),angle]
 
+							elif angle >0:	# Si on va dans l'autre sens
+								anglePassant2 = [int(x),int(y),angle]
 
-		return [ray1, ray2]
+		return [ray1, ray2, anglePassant1, anglePassant2]
 
 	def deleteRayons(self):
 		self.can.delete(self.tag)
