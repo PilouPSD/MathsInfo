@@ -8,14 +8,12 @@ class Rayons():
 		self.x = x
 		self.y = y
 		self.poly=poly
-		self.nbRayons = 2000 # Nb de rayons tracés (dans les 2 sens)
 		self.tag = "Rayon"
-
-		self.usefulPoints = []
-
+		self.drawMode = True
 		self.drawRayons()
 
 	def drawRayons(self):
+		self.usefulPoints = []
 		self.can.delete(self.tag)	# Supression des anciens rayons
 		
 		a1 = [self.x,self.y] # Centre d'application
@@ -32,8 +30,9 @@ class Rayons():
 				for ray in rays[:2]:	# Affichage des rayons si ils existent
 					if ray!=None:
 						self.usefulPoints += [ray]
-						self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-						self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
+						if self.drawMode:
+							self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+							self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
 
 				for passant in rays[2:]:
 					if passant != None:
@@ -41,8 +40,10 @@ class Rayons():
 
 		self.usefulPoints = sorted(self.usefulPoints, key=itemgetter(2))
 
-		#self.can.create_polygon([p[:2] for p in self.usefulPoints],fill="yellow",tag = self.tag)	# Affichage du polygone
-		self.can.create_oval(self.x-3,self.y-3,self.x+3,self.y+3,fill="red",outline="black",width=1,tag=["center",self.tag])	# Affichage du centre
+		if not self.drawMode:
+			self.can.create_polygon([p[:2] for p in self.usefulPoints],fill="yellow",tag = self.tag)	# Affichage du polygone
+		self.can.create_oval(self.x-3,self.y-3,self.x+3,self.y+3,fill="red",outline="red",width=1,tag=["center",self.tag])	# Affichage du centre
+
 
 		#DEBUG
 		if 0:
