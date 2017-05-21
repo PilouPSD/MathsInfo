@@ -23,6 +23,7 @@ class Application(Tk):
 		self.newBtn = Button(self.toolbar, text = "Créer Polygone", command = self.newPoly, width=15,height=2)
 		self.delBtn = Button(self.toolbar, text = "Supprimer Poly", command = self.supPoly, width=15,height=2)
 		self.rayons = Button(self.toolbar, text = "Créer rayons", command = self.createRayons, width=15,height=2)
+		self.switchRay = Button(self.toolbar, text = "Switch Rays/Poly", command = self.switchRay, width=15,height=2)
 		self.quitBtn = Button(self.toolbar, text = "Quitter", command = self.destroy, width=15,height=2)
 
 		# Création de la zone de texte pour le nom du fichier
@@ -42,6 +43,7 @@ class Application(Tk):
 		self.newBtn.place(x=20,y=200)
 		self.delBtn.place(x=20,y=250)
 		self.rayons.place(x=20,y=340)
+		self.switchRay.place(x=20,y=390)
 		self.quitBtn.place(x=20,y=750)
 
 	def ouvrir(self):
@@ -69,6 +71,12 @@ class Application(Tk):
 	def createRayons(self):
 		self.editor.doCreateRayons = not self.editor.doCreateRayons
 
+	def switchRay(self):
+		try:
+			self.editor.rayons.drawMode = not self.editor.rayons.drawMode
+			self.editor.rayons.deleteRayons()
+			self.editor.rayons.drawRayons()
+		except:pass
 
 if __name__ == '__main__':
 	app = Application().mainloop()
