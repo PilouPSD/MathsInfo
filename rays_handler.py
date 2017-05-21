@@ -8,7 +8,6 @@ class Rayons():
 		self.x = x
 		self.y = y
 		self.poly=poly
-		self.nbRayons = 2000 # Nb de rayons tracés (dans les 2 sens)
 		self.tag = "Rayon"
 		self.drawMode = True
 		self.drawRayons()
