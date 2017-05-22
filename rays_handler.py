@@ -96,7 +96,7 @@ class Rayons():
 								minDist2 = dist
 								ray2 = [int(x),int(y),angle]
 
-					elif (b1[0] == int(x) and b1[1] == int(y)) or (b2[0] == int(x) and  b2[1] == int(y)): # Vérification qu'on est en bout de segment bout de segment
+					elif [int(x),int(y)]==b1 or [int(x),int(y)] == b2: # Vérification qu'on est en bout de segment bout de segment
 						
 						if [int(x),int(y)]==b1:		# Si l'intersection est le premier point
 							angle1 = atan2(self.x - b2[0],self.y - b2[1])
@@ -135,15 +135,24 @@ class Rayons():
 									minDist2 = dist
 									ray2 = [int(x),int(y),angle]
 						else:
-							if angle<=0:	# Si on va dans un sens
-								if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
-										minDist1 = dist
-										anglePassant1 = [int(x),int(y),angle]
+							if angle<=0 and ray1 != None:	# Si on va dans un sens
+								anglePassant1 = [int(x),int(y),angle]
 
-							elif angle>0:	# Si on va dans l'autre sens
-								if dist < minDist2 or minDist2 == -1:	# Si initialisation ou distance minimale
-									minDist2 = dist
-									anglePassant2 = [int(x),int(y),angle]
+							elif angle>0 and ray2 != None:	# Si on va dans l'autre sens
+								anglePassant2 = [int(x),int(y),angle]
+
+		if anglePassant1 != None:
+			distp1 = sqrt((anglePassant1[0]-self.x)**2+(anglePassant1[1]-self.y)**2)
+			dist1 = sqrt((ray1[0]-self.x)**2+(ray1[1]-self.y)**2)
+			if dist1 < distp1:
+				anglePassant1 = None
+		
+		if anglePassant2 != None:
+			distp2 = sqrt((anglePassant2[0]-self.x)**2+(anglePassant2[1]-self.y)**2)
+			dist2 = sqrt((ray2[0]-self.x)**2+(ray2[1]-self.y)**2)
+			if dist2 < distp2:
+				anglePassant2 = None
+
 
 		return [ray1, ray2, anglePassant1, anglePassant2]
 
