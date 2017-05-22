@@ -10,7 +10,9 @@ __pycache__/
 .Python
 maps/
 env/
+maps/
 build/
+maps/
 develop-eggs/
 dist/
 downloads/
