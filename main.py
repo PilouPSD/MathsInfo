@@ -6,6 +6,7 @@ class Application(Tk):
 	def __init__(self):
 		self.buttons = []
 
+
 		Tk.__init__(self)
 		self.title("Maths-Info")	
 		self.resizable(0,0)	# Fenêtre non redimentionable 
