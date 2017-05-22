@@ -37,6 +37,7 @@ class Rayons():
 				for passant in rays[2:]:
 					if passant != None:
 						self.usefulPoints+=[passant]
+						self.can.create_oval(passant[0]-2,passant[1]-2,passant[0]+2,passant[1]+2,outline="blue",width=2,tag=self.tag) # Affichage intersection
 
 		self.usefulPoints = sorted(self.usefulPoints, key=itemgetter(2))
 
