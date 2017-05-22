@@ -82,10 +82,9 @@ class Rayons():
 					y = (det1 * a1[1] + det2 * a2[1])/(det1+det2)
 
 					angle = atan2(self.x - x,self.y - y)
+					dist = sqrt((x-self.x)**2 + (y-self.y)**2)	# Calcul de la distance centre - point d'intersection
 
 					if ((b1[0] > x > b2[0]) or (b1[0] < x < b2[0])) and ((b1[1] > y > b2[1]) or (b1[1] < y < b2[1])): # Vérification qu'on est dans le segment
-
-						dist = sqrt((x-self.x)**2 + (y-self.y)**2)	# Calcul de la distance centre - point d'intersection
 						
 						if angle<=0:	# Si on va dans un sens
 							if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
@@ -125,7 +124,6 @@ class Rayons():
 									angle2=pi
 
 						if angle1<angle<angle2 or angle1>angle>angle2:	# Si le rayon est arrêté par le polygone
-							#print("ça passe pas : " + str(round(angle1,2)) + ' ' + str(round(angle,2)) + ' ' + str(round(angle2,2)))
 							dist = sqrt((x-self.x)**2 + (y-self.y)**2)
 							if angle<=0:	# Si on va dans un sens
 								if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
@@ -138,10 +136,14 @@ class Rayons():
 									ray2 = [int(x),int(y),angle]
 						else:
 							if angle<=0:	# Si on va dans un sens
-									anglePassant1 = [int(x),int(y),angle]
+								if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
+										minDist1 = dist
+										anglePassant1 = [int(x),int(y),angle]
 
-							elif angle >0:	# Si on va dans l'autre sens
-								anglePassant2 = [int(x),int(y),angle]
+							elif angle>0:	# Si on va dans l'autre sens
+								if dist < minDist2 or minDist2 == -1:	# Si initialisation ou distance minimale
+									minDist2 = dist
+									anglePassant2 = [int(x),int(y),angle]
 
 		return [ray1, ray2, anglePassant1, anglePassant2]
 
