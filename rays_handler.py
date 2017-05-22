@@ -20,6 +20,7 @@ class Rayons():
 
 		for pol in self.poly:	# On parcourt tous les polygones
 			for k in pol.points:	# parcourt tous les points de chaque polygone
+			
 
 				a2 = [k.x,k.y]
 
