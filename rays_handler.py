@@ -84,19 +84,8 @@ class Rayons():
 					angle = atan2(self.x - x,self.y - y)
 					dist = sqrt((x-self.x)**2 + (y-self.y)**2)	# Calcul de la distance centre - point d'intersection
 
-					if ((b1[0] >= x >= b2[0]) or (b1[0] <= x <= b2[0])) and ((b1[1] >= y >= b2[1]) or (b1[1] <= y <= b2[1])): # Vérification qu'on est dans le segment
-						
-						if angle<=0:	# Si on va dans un sens
-							if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
-								minDist1 = dist
-								ray1 = [int(x),int(y),angle]
 
-						elif angle >0:	# Si on va dans l'autre sens
-							if dist < minDist2 or minDist2 == -1:	# Si initialisation ou distance minimale
-								minDist2 = dist
-								ray2 = [int(x),int(y),angle]
-
-					elif [int(x),int(y)]==b1 or [int(x),int(y)] == b2: # Vérification qu'on est en bout de segment bout de segment
+					if [int(x),int(y)]==b1 or [int(x),int(y)] == b2: # Vérification qu'on est en bout de segment
 						
 						if [int(x),int(y)]==b1:		# Si l'intersection est le premier point
 							angle1 = atan2(self.x - b2[0],self.y - b2[1])
@@ -134,12 +123,24 @@ class Rayons():
 								if dist < minDist2 or minDist2 == -1:	# Si initialisation ou distance minimale
 									minDist2 = dist
 									ray2 = [int(x),int(y),angle]
-						else:
+						else:	# Le rayon touche le coin mais continue
 							if angle<=0 and ray1 != None:	# Si on va dans un sens
 								anglePassant1 = [int(x),int(y),angle]
 
 							elif angle>0 and ray2 != None:	# Si on va dans l'autre sens
 								anglePassant2 = [int(x),int(y),angle]
+
+					elif ((b1[0] >= x >= b2[0]) or (b1[0] <= x <= b2[0])) and ((b1[1] >= y >= b2[1]) or (b1[1] <= y <= b2[1])): # Vérification qu'on est dans le segment
+						
+						if angle<=0:	# Si on va dans un sens
+							if dist < minDist1 or minDist1 == -1: 	# Si initialisation ou distance minimale
+								minDist1 = dist
+								ray1 = [int(x),int(y),angle]
+
+						elif angle >0:	# Si on va dans l'autre sens
+							if dist < minDist2 or minDist2 == -1:	# Si initialisation ou distance minimale
+								minDist2 = dist
+								ray2 = [int(x),int(y),angle]
 
 		if anglePassant1 != None:
 			distp1 = sqrt((anglePassant1[0]-self.x)**2+(anglePassant1[1]-self.y)**2)
