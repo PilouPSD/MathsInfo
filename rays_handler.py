@@ -40,17 +40,17 @@ class Rayons():
 						self.usefulPoints+=[passant]
 						self.can.create_oval(passant[0]-2,passant[1]-2,passant[0]+2,passant[1]+2,outline="blue",width=2,tag=self.tag) # Affichage intersection
 
-		self.usefulPoints = sorted(self.usefulPoints, key=itemgetter(2))
+		self.tri()
 
 		if not self.drawMode:
-			self.can.create_polygon([p[:2] for p in self.usefulPoints],fill="yellow",tag = self.tag)	# Affichage du polygone
+			self.can.create_polygon([p[:2] for p in self.usefulPoints],fill="gold",tag = self.tag)	# Affichage du polygone
 		self.can.create_oval(self.x-3,self.y-3,self.x+3,self.y+3,fill="red",outline="red",width=1,tag=["center",self.tag])	# Affichage du centre
 
 
 		#DEBUG
-		if 0:
-			for p in self.usefulPoints:
-				print(p)
+		if 1:
+			#for p in self.usefulPoints:
+			#	print(p)
 			self.can.create_line(self.x-800,self.y,self.x+800,self.y,dash=True,tag=self.tag)
 			self.can.create_line(self.x,self.y-800,self.x,self.y+800,dash=True,tag=self.tag)
 			self.can.create_text(50,50,text="cadran 3")
@@ -64,7 +64,7 @@ class Rayons():
 		minDist2 = -1
 		ray1 = None
 		ray2 = None
-		anglePassant1 = None # Uniquement utilisé pour sauver coordonées des points où le rayon passe par un angle mais continue
+		anglePassant1 = None # Uniquement utilisé pour sauver coordonées des points où le rayon passe par un angle mais continue plus loin
 		anglePassant2 = None
 
 		for pol in self.poly: # Pour chaque polygone
@@ -156,6 +156,60 @@ class Rayons():
 
 
 		return [ray1, ray2, anglePassant1, anglePassant2]
+
+
+	def tri(self):
+		self.usefulPoints = sorted(self.usefulPoints, key=itemgetter(2))
+		for p in self.usefulPoints:
+			if self.usefulPoints.index(p) < len(self.usefulPoints)-1:
+				if p[:2] == self.usefulPoints[self.usefulPoints.index(p)+1][:2]:
+					print(p,self.usefulPoints[self.usefulPoints.index(p)+1])
+					self.usefulPoints.pop(self.usefulPoints.index(p)+1)
+			else:
+				if p[:2] == self.usefulPoints[-1][:2]:
+					print(p,self.usefulPoints[self.usefulPoints.index(p)])
+
+
+		for p in self.usefulPoints:
+
+			if self.usefulPoints.index(p) == len(self.usefulPoints)-1:
+				p1 = self.usefulPoints[-1]
+				p2 = self.usefulPoints[-2]
+			elif self.usefulPoints.index(p) == len(self.usefulPoints)-2:
+				p1 = self.usefulPoints[self.usefulPoints.index(p)+1]
+				p2 = self.usefulPoints[-1]
+			else:
+				p1 = self.usefulPoints[self.usefulPoints.index(p)+1]
+				p2 = self.usefulPoints[self.usefulPoints.index(p)+2]
+
+			if round(p1[2],5) == round(p[2],5): # Les deux points ont le même angle -> savoir lequel est premier
+				self.can.create_line(p[0],p[1],p1[0],p1[1],width=3, tag = self.tag,dash=True)
+				p0 = self.usefulPoints[self.usefulPoints.index(p)-1]
+
+				distP0P= sqrt( (p0[0]-p[0])**2 + (p0[1]-p[1])**2 )
+				distPP1 = sqrt( (p[0]-p1[0])**2 + (p[1]-p1[1])**2 )
+				distP0P1 = sqrt( (p0[0]-p1[0])**2 + (p0[1]-p1[1])**2 )
+				distP2P = sqrt( (p2[0]-p[0])**2 + (p2[1]-p[1])**2 )
+				distP2P1 = sqrt( (p2[0]-p1[0])**2 + (p2[1]-p1[1])**2 )
+
+
+				if distP0P + distPP1 + distP2P1 > distP0P1 + distPP1 + distP2P:
+					index1 = self.usefulPoints.index(p)
+					index2 = self.usefulPoints.index(p1)
+					self.usefulPoints[index1] = p1
+					self.usefulPoints[index2] = p
+					print("inversion des deux points")
+					print("p0:{} p:{} p1:{} | p0p:{} p0p1:{} pp1:{}".format(p0[:2],p[:2],p1[:2],int(distP0P),int(distPP1),int(distP0P1)))
+					#print(p0[:2],p[:2],p1[:2]," ancien")
+					#print(p0[:2],p1[:2],p[:2]," nouveau")
+
+				else:
+					print("----")
+					print("p0:{} p:{} p1:{} | p0p:{} p0p1:{} pp1:{}".format(p0[:2],p[:2],p1[:2],int(distP0P),int(distPP1),int(distP0P1)))
+					print("----")
+
+
+
 
 	def deleteRayons(self):
 		self.can.delete(self.tag)

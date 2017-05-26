@@ -142,6 +142,9 @@ class Editor(Tk):
 		self.prevY = -1
 	
 	def drag(self,event):	# Déplacement d'un point
+		if 1:
+			self.main.delete("debug")
+			self.main.create_text(50,10,text=str(event.x) + "," + str(event.y),tag="debug")
 
 		if self.moving!=None: # Si un point est sélectionné
 			if self.prevX==-1:
