@@ -2,6 +2,8 @@ from tkinter import *
 from editor import *
 import fileHandler
 
+x = 100
+y = 100
 class Application(Tk):
 	def __init__(self):
 		self.buttons = []
@@ -11,11 +13,15 @@ class Application(Tk):
 		self.resizable(0,0)	# Fenêtre non redimentionable 
 		self.main = Canvas(self, width=800, height=800, bg="light grey",border=0)
 		self.toolbar = Canvas(self,width=150,height=800,border=0)
-		self.toolbar.pack(side=LEFT)
+		self.toolbar.pack(side=LEFT)		
+		self
 		self.main.pack(side=LEFT)
 		self.initToolbar()
-		self.editor = Editor(self.main,self.toolbar)
+		self.editor = Editor(self.main,self.toolbar, self)
 		self.ouvrir()
+
+
+
 
 	def initToolbar(self):
 		self.openBtn = Button(self.toolbar, text = "Ouvrir", command = self.ouvrir, width=15,height=2)

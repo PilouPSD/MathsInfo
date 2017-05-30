@@ -2,16 +2,18 @@ from tkinter import *
 from math import cos, sin, pi, atan2, sqrt
 from operator import itemgetter
 
-gap = 0.01
-angle_torche = pi / 3
-start_angle = - pi / 2
-long_torche = 100
+gap = 0.005
+#self.angle_torche = pi / 4
+#self.start_angle = - pi / 2
+long_torche = 300
 
 class Rayons():
-	def __init__(self,can,x,y,poly):
+	def __init__(self,can,x,y, angle_torche, start_angle, poly):
 		self.can = can
 		self.x = x
 		self.y = y
+		self.angle_torche = angle_torche
+		self.start_angle = start_angle
 		self.poly=poly
 		self.tag = "Rayon"
 		self.drawMode = True
@@ -22,74 +24,59 @@ class Rayons():
 		self.can.delete(self.tag)	# Supression des anciens rayons
 		
 		a1 = [int(self.x),int(self.y), -2 * pi] # Centre d'application
+
+		if(-pi < self.start_angle + self.angle_torche < pi):
+			signes_angle_probleme = True
+		else:
+			signes_angle_probleme = False
+
+
+		a2 = [a1[0] - 100 * sin(self.start_angle),a1[1] - 100 * cos(self.start_angle), self.start_angle]
+		self.can.create_oval(a2[0]-3,a2[1]-3,a2[0]+3,a2[1]+3,fill="red",outline="red",width=1,tag=["center",self.tag])	# Affichage du centre	
+
+		angle = atan2(self.x - a2[0],self.y - a2[1])
+
+		rays = self.testRay(a1,a2, True)
+		ver = False
+		for ray in rays:
+			if(ray != None):
+				if(signes_angle_probleme):					
+					if(ray[2] >= self.start_angle and ray[2] <= self.start_angle + self.angle_torche):
+						self.usefulPoints += [ray]
+						ver = True
+				else:
+					if((ray[2] >= self.start_angle and ray[2] <= pi) or (ray[2] <= self.start_angle - 2*pi + self.angle_torche and ray[2] > - pi)):
+						self.usefulPoints += [ray]
+						ver = True
 		'''
-		a2 = [a1[0] - long_torche * sin(start_angle),a1[1] - long_torche * cos(start_angle), start_angle]
-		self.can.create_oval(a2[0]-1,a2[1]-1,a2[0]+1,a2[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-
-				
-		angle = atan2(self.x - a2[0],self.y - a2[1])
-
-		#self.can.create_line(self.x,self.y,a2[0],a2[1],fill="red",tag=self.tag)
-
-		if(angle >= start_angle and angle <= start_angle + angle_torche):
-			rays = self.testRay(a1,a2, True)
-
-			for ray in rays:
-				if(ray != None):
-					self.usefulPoints += [ray]
-			ver = False
-			for ray in rays[:2]:	# Affichage des rayons si ils existent
-				if ray!=None:
-					if(ray[2] >= start_angle and ray[2] <= start_angle + angle_torche):
-						ver = True
-						self.usefulPoints += [ray]
-						if self.drawMode:
-							self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-							self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
-
-			for passant in rays[2:]:
-				if passant != None:
-					if(passant[2] >= start_angle and passant[2] <= start_angle + angle_torche):
-						ver = True
-						self.usefulPoints+=[passant]
-						self.can.create_oval(passant[0]-2,passant[1]-2,passant[0]+2,passant[1]+2,outline="blue",width=2,tag=self.tag) # Affichage intersection
-			if(not ver):
-				self.usefulPoints += [a2]
-
-		a2 = [a1[0] - long_torche * sin(start_angle + angle_torche),a1[1] - long_torche * cos(start_angle+ angle_torche), start_angle]
-		self.can.create_oval(a2[0]-1,a2[1]-1,a2[0]+1,a2[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-
-				
-		angle = atan2(self.x - a2[0],self.y - a2[1])
-
-		#self.can.create_line(self.x,self.y,a2[0],a2[1],fill="red",tag=self.tag)
-
-		if(angle >= start_angle and angle <= start_angle + angle_torche):
-			rays = self.testRay(a1,a2, True)
-
-			for ray in rays:
-				if(ray != None):
-					self.usefulPoints += [ray]
-			ver = False
-			for ray in rays[:2]:	# Affichage des rayons si ils existent
-				if ray!=None:
-					if(ray[2] >= start_angle and ray[2] <= start_angle + angle_torche):
-						ver = True
-						self.usefulPoints += [ray]
-						if self.drawMode:
-							self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-							self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
-
-			for passant in rays[2:]:
-				if passant != None:
-					if(passant[2] >= start_angle and passant[2] <= start_angle + angle_torche):
-						ver = True
-						self.usefulPoints+=[passant]
-						self.can.create_oval(passant[0]-2,passant[1]-2,passant[0]+2,passant[1]+2,outline="blue",width=2,tag=self.tag) # Affichage intersection
-			if(not ver):
+		if(not ver):
+			if(a2[2] >= self.start_angle and a2[2] <= self.start_angle + self.angle_torche):
 				self.usefulPoints += [a2]'''
 
-		#self.usefulPoints += [a1]
+
+
+
+		a2 = [a1[0] - 100 * sin(self.start_angle + self.angle_torche),a1[1] - 100 * cos(self.start_angle+ self.angle_torche), self.start_angle]				
+		angle = atan2(self.x - a2[0],self.y - a2[1])
+
+		rays = self.testRay(a1,a2, True)
+		ver = False
+		for ray in rays:
+			if(ray != None):
+				if(ray[2] >= self.start_angle and ray[2] <= self.start_angle + self.angle_torche):
+					ver = True
+					self.usefulPoints += [ray]
+		'''
+		if(not ver):
+			if(a2[2] >= self.start_angle and a2[2] <= self.start_angle + self.angle_torche):
+				self.usefulPoints += [a2]
+				print("-----", end="")
+				print(a2)'''
+
+
+
+
+
 		for pol in self.poly:	# On parcourt tous les polygones
 			for k in pol.points:	# parcourt tous les points de chaque polygone
 			
@@ -99,33 +86,77 @@ class Rayons():
 				angle = atan2(self.x - a2[0],self.y - a2[1])
 
 				#self.can.create_line(self.x,self.y,a2[0],a2[1],fill="red",tag=self.tag)
+				if(signes_angle_probleme):	
+					if(angle > self.start_angle and angle < self.start_angle + self.angle_torche):
+						rays = self.testRay(a1,a2, True)
 
-				#if(angle > start_angle and angle < start_angle + angle_torche):
-				rays = self.testRay(a1,a2, True)
+						for ray in rays[:2]:	# Affichage des rayons si ils existent
+							if ray!=None:
+								if(ray[2] > self.start_angle and ray[2] < self.start_angle + self.angle_torche):
+									self.usefulPoints += [ray]
+									if self.drawMode:
+										self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+										self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
 
-				'''for ray in rays:
-					if(ray != None):
-						self.usefulPoints += [ray]'''
 
-				for ray in rays[:2]:	# Affichage des rayons si ils existent
-					if ray!=None:
-						#if(ray[2] > start_angle and ray[2] < start_angle + angle_torche):
-						self.usefulPoints += [ray]
-						if self.drawMode:
-							self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
-							self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
+					for passant in rays[2:]:
+						if passant != None:
+							if(passant[2] > self.start_angle and passant[2] < self.start_angle + self.angle_torche):
+								self.usefulPoints+=[passant]
 
-				for passant in rays[2:]:
-					if passant != None:
-						#if(passant[2] > start_angle and passant[2] < start_angle + angle_torche):
-						self.usefulPoints+=[passant]
-						self.can.create_oval(passant[0]-2,passant[1]-2,passant[0]+2,passant[1]+2,outline="blue",width=2,tag=self.tag) # Affichage intersection
+				else:
+					if((angle > self.start_angle and angle < pi) or (angle < self.start_angle - 2 * pi + self.angle_torche and angle > - pi)):
+						rays = self.testRay(a1,a2, True)
 
+						for ray in rays[:2]:	# Affichage des rayons si ils existent
+							if ray!=None:
+								if(signes_angle_probleme):	
+									if(ray[2] > self.start_angle and ray[2] < self.start_angle + self.angle_torche):
+										self.usefulPoints += [ray]
+										if self.drawMode:
+											self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+											self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
+								else:
+									if((ray[2] >= self.start_angle and ray[2] <= pi) or (ray[2] <= self.start_angle - 2*pi + self.angle_torche and ray[2] > - pi)):
+										if(ray[2] < 0):
+											ray[2] = ray[2] + 2 * pi
+										self.usefulPoints += [ray]
+										if self.drawMode:
+											self.can.create_oval(ray[0]-1,ray[1]-1,ray[0]+1,ray[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+											self.can.create_line(self.x,self.y,ray[0],ray[1],fill="black",tag=self.tag)	# Affichage du rayon
+
+
+
+					for passant in rays[2:]:
+						if passant != None:
+							if(signes_angle_probleme):	
+								if(passant[2] > self.start_angle and passant[2] < self.start_angle + self.angle_torche):
+									self.usefulPoints+=[passant]
+									self.can.create_oval(passant[0]-2,passant[1]-2,passant[0]+2,passant[1]+2,outline="blue",width=2,tag=self.tag) # Affichage intersection
+							else:
+								if((passant[2] >= self.start_angle and passant[2] <= pi) or (passant[2] <= self.start_angle - 2*pi + self.angle_torche and passant[2] > - pi)):
+									if(passant[2] < 0):
+										passant[2] = passant[2] + 2 * pi
+									self.usefulPoints += [passant]
+									if self.drawMode:
+										self.can.create_oval(passant[0]-1,passant[1]-1,passant[0]+1,passant[1]+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+										self.can.create_line(self.x,self.y,passant[0],passant[1],fill="black",tag=self.tag)	# Affichage du rayon
+
+
+
+		self.usefulPoints+=[a1]
 		self.usefulPoints = sorted(self.usefulPoints, key=itemgetter(2))
-		
+
+		for i in range(len(self.usefulPoints)):
+			longueur = sqrt((self.usefulPoints[0][0] - self.usefulPoints[i][0])**2 + (self.usefulPoints[0][1] - self.usefulPoints[i][1])**2)
+			if(longueur > long_torche):
+				self.usefulPoints[i] = [a1[0] - long_torche * sin(self.usefulPoints[i][2]),a1[1] - long_torche * cos(self.usefulPoints[i][2]),self.usefulPoints[i][2]]
+
 		if not self.drawMode:
 			self.can.create_polygon([p[:2] for p in self.usefulPoints],fill="gold",tag = self.tag)	# Affichage du polygone
 		self.can.create_oval(self.x-3,self.y-3,self.x+3,self.y+3,fill="red",outline="red",width=1,tag=["center",self.tag])	# Affichage du centre
+
+		self.can.update()
 
 
 		#DEBUG
@@ -251,6 +282,9 @@ class Rayons():
 
 									elif(dista > distb):
 										anglePassant1 = [int(x),int(y),angle]
+								else:
+									#self.can.create_oval(int(x)-10,int(y)-10,int(x)+10,int(y)+10,fill="green",outline="green",width=1,tag=["center",self.tag])
+									pass
 
 
 							elif angle>=0:	# Si on va dans l'autre sens
@@ -271,7 +305,7 @@ class Rayons():
 										if((tryangle - point1[1][2]) ** 2 < 0.01):
 											xb = point1[1][0]
 											yb = point1[1][1]
-											#self.can.create_oval(int(x)-10,int(y)-10,int(x)+10,int(y)+10,fill="blue",outline="blue",width=1,tag=["center",self.tag])
+											#self.can.create_oval(int(x)-10,int(y)-10,int(x)+10,int(y)+10,fill="red",outline="red",width=1,tag=["center",self.tag])
 											ray2 = [int(xb),int(yb),tryangle]	
 											dista = sqrt((xb-self.x)**2 + (yb-self.y)**2)
 
@@ -286,7 +320,7 @@ class Rayons():
 										if((tryangle - point1[1][2]) ** 2 < 0.01):
 											xb = point1[1][0]
 											yb = point1[1][1]
-											#self.can.create_oval(int(x)-10,int(y)-10,int(x)+10,int(y)+10,fill="green",outline="green",width=1,tag=["center",self.tag])
+											#self.can.create_oval(int(x)-10,int(y)-10,int(x)+10,int(y)+10,fill="black",outline="black",width=1,tag=["center",self.tag])
 											anglePassant2 = [int(xb),int(yb),tryangle + 4 * pi]											
 											distb = sqrt((xb-self.x)**2 + (yb-self.y)**2)	
 
@@ -297,6 +331,9 @@ class Rayons():
 
 									elif(dista > distb):
 										anglePassant2 = [int(x),int(y),angle]
+								else:
+									#self.can.create_oval(int(x)-10,int(y)-10,int(x)+10,int(y)+10,fill="green",outline="green",width=1,tag=["center",self.tag])
+									pass
 
 
 					elif ((b1[0] >= x >= b2[0]) or (b1[0] <= x <= b2[0])) and ((b1[1] >= y >= b2[1]) or (b1[1] <= y <= b2[1])): # Vérification qu'on est dans le segment

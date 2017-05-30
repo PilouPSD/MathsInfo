@@ -3,6 +3,9 @@ from rays_handler import *
 
 types = {"default":"snow","mirroir":"light blue","obstacle":"black","obstacle_rouge":"red","obstacle_bleu":"blue"}
 
+angle_torche = pi / 4
+delta = 5
+
 class Point():
 	def __init__(self,can,x,y,tag="points"):
 		self.x = x
@@ -46,8 +49,9 @@ class Polygone():
 
 
 class Editor(Tk):
-	def __init__(self,can,tools):
+	def __init__(self,can,tools, fen):
 		self.main = can
+		self.fen = fen
 		self.toolbar = tools
 		self.poly = []	# Stockage des polygones
 
@@ -69,6 +73,122 @@ class Editor(Tk):
 		self.main.bind("<ButtonPress>", self.buttonPressed) # Appui bouton souris
 		self.main.bind("<Motion>", self.drag)				# Mouvement souris
 		self.main.bind("<ButtonRelease>", self.stopDrag)	# Bouton souris relaché
+		self.fen.bind('<KeyPress>', self.KeyEvent)	# touche presser
+
+
+	def KeyEvent(self, e):
+		if(e.keycode == 37):
+
+			self.rayons.x += -delta
+			self.rayons.y += 0
+
+			aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
+			print_ = True
+			for i in aux:
+				for j in self.main.gettags(i):
+					if(j == "poly0" or j == "center" or j == "Rayon" or j == "current"):
+						pass
+					else:
+						print_ = False
+						print("probleme")
+						print(j)
+
+			if(print_):
+				self.rayons.deleteRayons()
+				self.rayons.drawRayons()
+			else:
+				self.rayons.x += +delta
+				self.rayons.y += 0
+
+		elif(e.keycode == 38):
+
+			self.rayons.x += 0
+			self.rayons.y += -delta
+
+			aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
+			print_ = True
+			for i in aux:
+				for j in self.main.gettags(i):
+					if(j == "poly0" or j == "center" or j == "Rayon" or j == "current"):
+						pass
+					else:
+						print_ = False
+						print("probleme")
+						print(j)
+
+			if(print_):
+				self.rayons.deleteRayons()
+				self.rayons.drawRayons()
+			else:
+				self.rayons.x += 0
+				self.rayons.y += delta
+		elif(e.keycode == 39):
+
+			self.rayons.x += delta
+			self.rayons.y += 0
+
+			aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
+			print_ = True
+			for i in aux:
+				for j in self.main.gettags(i):
+					if(j == "poly0" or j == "center" or j == "Rayon" or j == "current"):
+						pass
+					else:
+						print_ = False
+						print("probleme")
+						print(j)
+
+			if(print_):
+				self.rayons.deleteRayons()
+				self.rayons.drawRayons()
+			else:
+				self.rayons.x += -delta
+				self.rayons.y += 0
+		elif(e.keycode == 40):
+
+			self.rayons.x += 0
+			self.rayons.y += delta
+
+			aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
+			print_ = True
+			for i in aux:
+				for j in self.main.gettags(i):
+					if(j == "poly0" or j == "center" or j == "Rayon" or j == "current"):
+						pass
+					else:
+						print_ = False
+						print("probleme")
+						print(j)
+
+			if(print_):
+				self.rayons.deleteRayons()
+				self.rayons.drawRayons()
+			else:
+				self.rayons.x += 0
+				self.rayons.y += -delta
+
+		elif(e.keycode == 65):			
+			self.rayons.start_angle += 0.1
+			print(self.rayons.start_angle)
+			if(-pi < self.rayons.start_angle < pi):				
+				self.rayons.deleteRayons()
+				self.rayons.drawRayons()
+			else:				
+				self.rayons.start_angle -= 2 * pi				
+				self.rayons.deleteRayons()
+				self.rayons.drawRayons()
+		elif(e.keycode == 90):		
+			self.rayons.start_angle += -0.1
+			print(self.rayons.start_angle)
+			if(-pi < self.rayons.start_angle < pi):				
+				self.rayons.deleteRayons()
+				self.rayons.drawRayons()
+			else:				
+				self.rayons.start_angle += 2 * pi				
+				self.rayons.deleteRayons()
+				self.rayons.drawRayons()
+		else:
+			print(e.keycode)
 
 	def saisie(self,event=None):	# Début ou validation de la création d'un polygone
 		if event!=None: print(event.x,event.y)
@@ -99,6 +219,8 @@ class Editor(Tk):
 
 		self.saisir = not self.saisir
 
+
+
 	def newPoint(self,event):	# Création d'un nouveau point à l'emplacement du clic
 		self.points+=[Point(self.main,event.x,event.y,["points"+str(self.nbPoly),self.nbPoly])]
 		if len(self.points)>=2:
@@ -127,7 +249,8 @@ class Editor(Tk):
 						self.selectedPoly = "rayon"
 
 		if self.doCreateRayons:	# On crée les rayons
-			self.rayons = Rayons(self.main,event.x,event.y,self.poly)
+			centre = [event.x, event.y]
+			self.rayons = Rayons(self.main,event.x,event.y,angle_torche, - 5* pi / 8, self.poly)
 			self.doCreateRayons = False
 			self.rayonsDessin = True
 
