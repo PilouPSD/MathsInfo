@@ -250,7 +250,7 @@ class Editor(Tk):
 
 		if self.doCreateRayons:	# On crée les rayons
 			centre = [event.x, event.y]
-			self.rayons = Rayons(self.main,event.x,event.y,angle_torche, - 5* pi / 8, self.poly)
+			self.rayons = Rayons(self.main,event.x,event.y,angle_torche, 7* pi / 8, self.poly) #- 5* pi / 8
 			self.doCreateRayons = False
 			self.rayonsDessin = True
 
