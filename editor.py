@@ -67,6 +67,7 @@ class Editor(Tk):
 		self.doCreateRayons = False		# Si Vrai, crée les rayons quand on clique dans la fenêtre
 		self.rayonsDessin = False
 		self.angle_souris = -pi / 2
+		self.ray = False
 		self.ongame = False
 		self.souris = {}
 
@@ -84,144 +85,146 @@ class Editor(Tk):
 
 
 	def KeyEvent(self, e):
-		if(e.keycode == 37):
+		if(self.ray):
 
-			self.rayons.x += -delta
-			self.rayons.y += 0
+				if(e.keycode == 37):
 
-			aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
-			print_ = True
-			tr = False
-			for i in aux:
-				default = False
-				for k in self.poly:
-					if k.material=="default" and k.id == i:
-						default = True
-						tr = True
-						break
-				for j in self.main.gettags(i):
-					if(default or j == "center" or j == "Rayon" or j == "current" or j == "vwpoly"or j == "Souris"):
-						pass
+					self.rayons.x += -delta
+					self.rayons.y += 0
+
+					aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
+					print_ = True
+					tr = False
+					for i in aux:
+						default = False
+						for k in self.poly:
+							if k.material=="default" and k.id == i:
+								default = True
+								tr = True
+								break
+						for j in self.main.gettags(i):
+							if(default or j == "center" or j == "Rayon" or j == "current" or j == "vwpoly"or j == "Souris"):
+								pass
+							else:
+								print_ = False
+								print("probleme")
+								print(j)
+
+					if(print_ and tr):	
+						self.rayons.deleteRayons()
+						self.rayons.drawRayons()
 					else:
-						print_ = False
-						print("probleme")
-						print(j)
+						self.rayons.x += +delta
+						self.rayons.y += 0
 
-			if(print_ and tr):	
-				self.rayons.deleteRayons()
-				self.rayons.drawRayons()
-			else:
-				self.rayons.x += +delta
-				self.rayons.y += 0
+				elif(e.keycode == 38):
 
-		elif(e.keycode == 38):
+					self.rayons.x += 0
+					self.rayons.y += -delta
 
-			self.rayons.x += 0
-			self.rayons.y += -delta
+					aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
+					print_ = True
+					tr = False
+					for i in aux:
+						default = False
+						for k in self.poly:
+							if k.material=="default" and k.id == i:
+								default = True
+								tr = True
+								break
+						for j in self.main.gettags(i):
+							if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly"or j == "Souris"):
+								pass
+							else:
+								print_ = False
+								print("probleme")
+								print(j)
 
-			aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
-			print_ = True
-			tr = False
-			for i in aux:
-				default = False
-				for k in self.poly:
-					if k.material=="default" and k.id == i:
-						default = True
-						tr = True
-						break
-				for j in self.main.gettags(i):
-					if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly"or j == "Souris"):
-						pass
+					if(print_ and tr):	
+						self.rayons.deleteRayons()
+						self.rayons.drawRayons()
 					else:
-						print_ = False
-						print("probleme")
-						print(j)
+						self.rayons.x += 0
+						self.rayons.y += delta
+				elif(e.keycode == 39):
 
-			if(print_ and tr):	
-				self.rayons.deleteRayons()
-				self.rayons.drawRayons()
-			else:
-				self.rayons.x += 0
-				self.rayons.y += delta
-		elif(e.keycode == 39):
+					self.rayons.x += delta
+					self.rayons.y += 0
 
-			self.rayons.x += delta
-			self.rayons.y += 0
+					aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
+					print_ = True
+					tr = False
+					for i in aux:
+						default = False
+						for k in self.poly:
+							if k.material=="default" and k.id == i:
+								default = True
+								tr = True
+								break
+						for j in self.main.gettags(i):
+							if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly"or j == "Souris"):
+								pass
+							else:
+								print_ = False
+								print("probleme")
+								print(j)
 
-			aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
-			print_ = True
-			tr = False
-			for i in aux:
-				default = False
-				for k in self.poly:
-					if k.material=="default" and k.id == i:
-						default = True
-						tr = True
-						break
-				for j in self.main.gettags(i):
-					if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly"or j == "Souris"):
-						pass
+					if(print_ and tr):	
+						self.rayons.deleteRayons()
+						self.rayons.drawRayons()
 					else:
-						print_ = False
-						print("probleme")
-						print(j)
+						self.rayons.x += -delta
+						self.rayons.y += 0
+				elif(e.keycode == 40):
 
-			if(print_ and tr):	
-				self.rayons.deleteRayons()
-				self.rayons.drawRayons()
-			else:
-				self.rayons.x += -delta
-				self.rayons.y += 0
-		elif(e.keycode == 40):
+					self.rayons.x += 0
+					self.rayons.y += delta
 
-			self.rayons.x += 0
-			self.rayons.y += delta
+					aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
+					print_ = True
+					tr = False
+					for i in aux:
+						default = False
+						for k in self.poly:
+							if k.material=="default" and k.id == i:
+								default = True
+								tr = True
+								break
+						for j in self.main.gettags(i):
+							if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly" or j == "Souris"):
+								pass
+							else:
+								print_ = False
+								print("probleme")
+								print(j)
 
-			aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
-			print_ = True
-			tr = False
-			for i in aux:
-				default = False
-				for k in self.poly:
-					if k.material=="default" and k.id == i:
-						default = True
-						tr = True
-						break
-				for j in self.main.gettags(i):
-					if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly" or j == "Souris"):
-						pass
+					if(print_ and tr):	
+						self.rayons.deleteRayons()
+						self.rayons.drawRayons()
 					else:
-						print_ = False
-						print("probleme")
-						print(j)
+						self.rayons.x += 0
+						self.rayons.y += -delta
 
-			if(print_ and tr):	
-				self.rayons.deleteRayons()
-				self.rayons.drawRayons()
-			else:
-				self.rayons.x += 0
-				self.rayons.y += -delta
-
-		elif(e.keycode == 65):			
-			self.rayons.start_angle += 0.1
-			if(-pi < self.rayons.start_angle < pi):				
-				self.rayons.deleteRayons()
-				self.rayons.drawRayons()
-			else:				
-				self.rayons.start_angle -= 2 * pi				
-				self.rayons.deleteRayons()
-				self.rayons.drawRayons()
-		elif(e.keycode == 90):		
-			self.rayons.start_angle += -0.1
-			if(-pi < self.rayons.start_angle < pi):				
-				self.rayons.deleteRayons()
-				self.rayons.drawRayons()
-			else:				
-				self.rayons.start_angle += 2 * pi				
-				self.rayons.deleteRayons()
-				self.rayons.drawRayons()
-		else:
-			print(e.keycode)
+				elif(e.keycode == 65):			
+					self.rayons.start_angle += 0.1
+					if(-pi < self.rayons.start_angle < pi):				
+						self.rayons.deleteRayons()
+						self.rayons.drawRayons()
+					else:				
+						self.rayons.start_angle -= 2 * pi				
+						self.rayons.deleteRayons()
+						self.rayons.drawRayons()
+				elif(e.keycode == 90):		
+					self.rayons.start_angle += -0.1
+					if(-pi < self.rayons.start_angle < pi):				
+						self.rayons.deleteRayons()
+						self.rayons.drawRayons()
+					else:				
+						self.rayons.start_angle += 2 * pi				
+						self.rayons.deleteRayons()
+						self.rayons.drawRayons()
+				else:
+					print(e.keycode)
 
 	def saisie(self,event=None):	# Début ou validation de la création d'un polygone
 		if event!=None: print(event.x,event.y)
@@ -284,6 +287,7 @@ class Editor(Tk):
 		if self.doCreateRayons:	# On crée les rayons
 			centre = [event.x, event.y]
 			self.rayons = Rayons(self.main,event.x,event.y,angle_torche, 7* pi / 8, self.poly) #- 5* pi / 8
+			self.ray = True
 			#self.souris = Souris(self.main,100,100, self.poly) #- 5* pi / 8
 			threading.Thread(target=self.souri).start()
 			self.doCreateRayons = False
