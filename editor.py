@@ -1,10 +1,14 @@
 from tkinter import *
 from rays_handler import *
+from time import sleep
+import threading
+import random
 
 types = {"default":"snow","mirroir":"light blue","obstacle":"black","obstacle_rouge":"red","obstacle_bleu":"blue"}
 
 angle_torche = pi / 4
-delta = 5
+delta = 1
+
 
 class Point():
 	def __init__(self,can,x,y,tag="points"):
@@ -62,6 +66,9 @@ class Editor(Tk):
 		self.nbPoly = 0					# Id unique du dernier polygone créé
 		self.doCreateRayons = False		# Si Vrai, crée les rayons quand on clique dans la fenêtre
 		self.rayonsDessin = False
+		self.angle_souris = -pi / 2
+		self.ongame = False
+		self.souris = {}
 
 		# Menu déroulant pour le matériau
 		self.polygonType = StringVar()
@@ -84,16 +91,23 @@ class Editor(Tk):
 
 			aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
 			print_ = True
+			tr = False
 			for i in aux:
+				default = False
+				for k in self.poly:
+					if k.material=="default" and k.id == i:
+						default = True
+						tr = True
+						break
 				for j in self.main.gettags(i):
-					if(j == "poly0" or j == "center" or j == "Rayon" or j == "current"):
+					if(default or j == "center" or j == "Rayon" or j == "current" or j == "vwpoly"or j == "Souris"):
 						pass
 					else:
 						print_ = False
 						print("probleme")
 						print(j)
 
-			if(print_):
+			if(print_ and tr):	
 				self.rayons.deleteRayons()
 				self.rayons.drawRayons()
 			else:
@@ -107,16 +121,23 @@ class Editor(Tk):
 
 			aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
 			print_ = True
+			tr = False
 			for i in aux:
+				default = False
+				for k in self.poly:
+					if k.material=="default" and k.id == i:
+						default = True
+						tr = True
+						break
 				for j in self.main.gettags(i):
-					if(j == "poly0" or j == "center" or j == "Rayon" or j == "current"):
+					if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly"or j == "Souris"):
 						pass
 					else:
 						print_ = False
 						print("probleme")
 						print(j)
 
-			if(print_):
+			if(print_ and tr):	
 				self.rayons.deleteRayons()
 				self.rayons.drawRayons()
 			else:
@@ -129,16 +150,23 @@ class Editor(Tk):
 
 			aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
 			print_ = True
+			tr = False
 			for i in aux:
+				default = False
+				for k in self.poly:
+					if k.material=="default" and k.id == i:
+						default = True
+						tr = True
+						break
 				for j in self.main.gettags(i):
-					if(j == "poly0" or j == "center" or j == "Rayon" or j == "current"):
+					if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly"or j == "Souris"):
 						pass
 					else:
 						print_ = False
 						print("probleme")
 						print(j)
 
-			if(print_):
+			if(print_ and tr):	
 				self.rayons.deleteRayons()
 				self.rayons.drawRayons()
 			else:
@@ -151,16 +179,23 @@ class Editor(Tk):
 
 			aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
 			print_ = True
+			tr = False
 			for i in aux:
+				default = False
+				for k in self.poly:
+					if k.material=="default" and k.id == i:
+						default = True
+						tr = True
+						break
 				for j in self.main.gettags(i):
-					if(j == "poly0" or j == "center" or j == "Rayon" or j == "current"):
+					if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly" or j == "Souris"):
 						pass
 					else:
 						print_ = False
 						print("probleme")
 						print(j)
 
-			if(print_):
+			if(print_ and tr):	
 				self.rayons.deleteRayons()
 				self.rayons.drawRayons()
 			else:
@@ -169,7 +204,6 @@ class Editor(Tk):
 
 		elif(e.keycode == 65):			
 			self.rayons.start_angle += 0.1
-			print(self.rayons.start_angle)
 			if(-pi < self.rayons.start_angle < pi):				
 				self.rayons.deleteRayons()
 				self.rayons.drawRayons()
@@ -179,7 +213,6 @@ class Editor(Tk):
 				self.rayons.drawRayons()
 		elif(e.keycode == 90):		
 			self.rayons.start_angle += -0.1
-			print(self.rayons.start_angle)
 			if(-pi < self.rayons.start_angle < pi):				
 				self.rayons.deleteRayons()
 				self.rayons.drawRayons()
@@ -251,8 +284,134 @@ class Editor(Tk):
 		if self.doCreateRayons:	# On crée les rayons
 			centre = [event.x, event.y]
 			self.rayons = Rayons(self.main,event.x,event.y,angle_torche, 7* pi / 8, self.poly) #- 5* pi / 8
+			#self.souris = Souris(self.main,100,100, self.poly) #- 5* pi / 8
+			threading.Thread(target=self.souri).start()
 			self.doCreateRayons = False
 			self.rayonsDessin = True
+
+	def init_game_souris(self, nb):
+		self.nb_souris = nb
+		self.nb_souris_gg = nb
+		self.souris = []
+		self.main.delete("Souris")
+		for i in range(nb):
+
+			print_ = True
+			tr = False
+
+			while (not print_ or not tr):
+				tr = False
+				print_ = True
+				x = random.randint(0, 800)
+				y = random.randint(0, 800)
+				aux = self.main.find_overlapping(x-2,y-2,x+2,y+2)
+				for i in aux:
+					default = False
+					for k in self.poly:
+						if k.material=="default" and k.id == i:
+							default = True
+							tr = True
+							break
+					for j in self.main.gettags(i):
+						if(default or j == "center" or j == "Rayon" or j == "current"):
+							pass
+						else:
+							print_ = False
+			self.souris += [Souris(self.main,x,y, self.poly)]
+
+
+	def souri(self):
+		while 1:
+			if(self.ongame):
+				for ji in self.souris:
+					aux = self.main.find_overlapping(ji.x,ji.y,ji.x,ji.y)
+					print_ = True
+					tr = False
+					for i in aux:
+						default = False
+						for k in self.poly:
+							if k.material=="default" and k.id == i:
+								default = True
+								tr = True
+								break
+						for j in self.main.gettags(i):
+							if(j == "vwpoly"):
+								print_ = False
+
+					if(not print_):
+						ji.win()
+						if(ji.find == False):
+							self.nb_souris = self.nb_souris - 1
+							if(self.nb_souris == 0):
+								self.main.delete("errasetxt")
+								self.main.create_text(110,40, text="vous avez gagné", tag="errasetxt")
+							else:
+								str_aff = str(self.nb_souris) + ' / ' + str(self.nb_souris_gg)
+								self.main.delete("errasetxt")
+								self.main.create_text(110,40, text=str_aff, tag="errasetxt")
+						ji.find = True
+				sleep(0.001)
+		'''
+		for i in range (1000):			
+			self.souris.x = self.souris.x - delta * cos(self.angle_souris)
+			self.souris.y = self.souris.y - delta * sin(self.angle_souris)
+
+
+			aux = self.main.find_overlapping(self.souris.x,self.souris.y,self.souris.x,self.souris.y)
+			print_ = True
+			tr = False
+			pb = ""
+			for i in aux:
+				default = False
+				for k in self.poly:
+					if k.material=="default" and k.id == i:
+						default = True
+						tr = True
+						break
+				for j in self.main.gettags(i):
+					if(default or j == "center" or j == "Rayon" or j == "current"):
+						pass
+					else:
+						print_ = False
+						pb = j
+
+			if(print_ and tr):					
+				self.souris.draw()
+			else:
+				test = True
+				for pol in self.poly: # Pour chaque polygone
+					if(pol.tag == pb):
+						for k in range(len(pol.points) - 1):
+							b1 = [pol.points[k-1].x,pol.points[k-1].y]
+							b2 = [pol.points[k].x,pol.points[k].y]
+
+							coef1 = (b1[1] - b2[1]) / (b1[0] - b2[0])
+
+							if(b1[0] != self.souris.x):
+								coef2 = (b1[1] - self.souris.y) / (b1[0] - self.souris.x)
+							else:
+								coef2 = 1000000000
+							if(test):
+								if(coef1 - 10 < coef2 < coef1 + 10):
+									angle = atan2(b2[0] - b1[0], b2[1] - b1[1])
+									#self.main.create_oval(b1[0]-3,b1[1]-3,b1[0]+3,b1[1]+3,fill="red",outline="red",width=1,tag=["center"])	# Affichage du centre
+									#self.main.create_oval(b2[0]-3,b2[1]-3,b2[0]+3,b2[1]+3,fill="green",outline="green",width=1,tag=["center"])	# Affichage du centre
+
+									if(self.angle_souris >= pi):
+										self.angle_souris = self.angle_souris - 2 * pi
+									elif(self.angle_souris <= -pi):
+										self.angle_souris = self.angle_souris + 2 * pi
+
+									angle1 = pi / 2 - (self.angle_souris - angle)
+
+									self.angle_souris = - self.angle_souris
+
+									print(self.angle_souris)
+									test = False
+								
+			sleep(0.01)
+
+		'''
 
 	def getPolyId(self,tag):	# Récupération de l'id d'un polygone par son tag
 		for i in range(len(self.poly)):

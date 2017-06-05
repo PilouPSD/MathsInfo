@@ -16,7 +16,7 @@ class Rayons():
 		self.start_angle = start_angle
 		self.poly=poly
 		self.tag = "Rayon"
-		self.drawMode = True
+		self.drawMode = False
 		self.drawRayons()
 
 	def drawRayons(self):
@@ -29,7 +29,7 @@ class Rayons():
 			signes_angle_probleme = True
 		else:
 			signes_angle_probleme = False
-			
+
 
 
 		a2 = [a1[0] - 1000 * sin(self.start_angle),a1[1] - 1000 * cos(self.start_angle), self.start_angle]
@@ -208,7 +208,7 @@ class Rayons():
 				self.usefulPoints[i] = [a1[0] - long_torche * sin(self.usefulPoints[i][2]),a1[1] - long_torche * cos(self.usefulPoints[i][2]),self.usefulPoints[i][2]]
 
 		if not self.drawMode:
-			self.can.create_polygon([p[:2] for p in self.usefulPoints],fill="gold",tag = self.tag)	# Affichage du polygone
+			self.can.create_polygon([p[:2] for p in self.usefulPoints],fill="gold",tag = ["vwpoly",self.tag])	# Affichage du polygone
 		self.can.create_oval(self.x-3,self.y-3,self.x+3,self.y+3,fill="red",outline="red",width=1,tag=["center",self.tag])	# Affichage du centre
 
 		self.can.update()
@@ -424,6 +424,25 @@ class Rayons():
 	def deleteRayons(self):
 		self.can.delete(self.tag)
 
+class Souris():
+	def __init__(self,can,x,y, poly):
+		self.can = can
+		self.x = x
+		self.y = y
+		self.poly=poly
+		self.tag = "Souris"
+		self.find = False
+		self.draw()
+
+	def draw(self):
+		self.can.create_oval(self.x-1,self.y-1,self.x+1,self.y+1,outline="red",width=2,tag=self.tag) # Affichage intersection
+	def deleat(self):
+		pass
+
+	def win(self):
+		self.can.create_oval(self.x-5,self.y-5,self.x+5,self.y+5,outline="red", fill="red",width=2,tag=self.tag) # Affichage intersection
+
+			
 if __name__ == '__main__':
 	from main import *
 	app = Application().mainloop()

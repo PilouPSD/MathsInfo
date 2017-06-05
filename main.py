@@ -30,6 +30,7 @@ class Application(Tk):
 		self.delBtn = Button(self.toolbar, text = "Supprimer Poly", command = self.supPoly, width=15,height=2)
 		self.rayons = Button(self.toolbar, text = "Créer rayons", command = self.createRayons, width=15,height=2)
 		self.switchRay = Button(self.toolbar, text = "Switch Rays/Poly", command = self.switchRay, width=15,height=2)
+		self.game = Button(self.toolbar, text = "Jouer", command = self.jouer, width=15,height=2)
 		self.quitBtn = Button(self.toolbar, text = "Quitter", command = self.destroy, width=15,height=2)
 
 		# Création de la zone de texte pour le nom du fichier
@@ -50,6 +51,7 @@ class Application(Tk):
 		self.delBtn.place(x=20,y=250)
 		self.rayons.place(x=20,y=340)
 		self.switchRay.place(x=20,y=390)
+		self.game.place(x=20,y=440)
 		self.quitBtn.place(x=20,y=750)
 
 	def ouvrir(self):
@@ -83,6 +85,13 @@ class Application(Tk):
 			self.editor.rayons.deleteRayons()
 			self.editor.rayons.drawRayons()
 		except:pass
+
+
+	def jouer(self):
+		self.editor.init_game_souris(10)
+		self.editor.ongame = True
+
+
 
 if __name__ == '__main__':
 	app = Application().mainloop()
