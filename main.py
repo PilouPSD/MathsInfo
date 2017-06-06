@@ -11,7 +11,7 @@ class Application(Tk):
 		Tk.__init__(self)
 		self.title("Maths-Info")	
 		self.resizable(0,0)	# Fenêtre non redimentionable 
-		self.main = Canvas(self, width=800, height=800, bg="light grey",border=0)
+		self.main = Canvas(self, width=800, height=800, bg="white",border=0)
 		self.toolbar = Canvas(self,width=150,height=800,border=0)
 		self.toolbar.pack(side=LEFT)		
 		self

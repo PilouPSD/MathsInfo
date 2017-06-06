@@ -1,6 +1,7 @@
 from tkinter import *
 from rays_handler import *
 from time import sleep
+import time
 import threading
 import random
 
@@ -92,7 +93,7 @@ class Editor(Tk):
 					self.rayons.x += -delta
 					self.rayons.y += 0
 
-					aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
+					aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y) # on cherche les colisions
 					print_ = True
 					tr = False
 					for i in aux:
@@ -103,7 +104,7 @@ class Editor(Tk):
 								tr = True
 								break
 						for j in self.main.gettags(i):
-							if(default or j == "center" or j == "Rayon" or j == "current" or j == "vwpoly"or j == "Souris"):
+							if(default or j == "center" or j == "Rayon" or j == "current" or j == "vwpoly"or j == "Souris"): # on verifie si on ne touche rien
 								pass
 							else:
 								print_ = False
@@ -111,10 +112,10 @@ class Editor(Tk):
 								print(j)
 
 					if(print_ and tr):	
-						self.rayons.deleteRayons()
+						self.rayons.deleteRayons()	# si on ne touche rien, on trace
 						self.rayons.drawRayons()
-					else:
-						self.rayons.x += +delta
+					else:	
+						self.rayons.x += +delta 	# Sinon on remet comme avant
 						self.rayons.y += 0
 
 				elif(e.keycode == 38):
@@ -122,7 +123,7 @@ class Editor(Tk):
 					self.rayons.x += 0
 					self.rayons.y += -delta
 
-					aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
+					aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)# on cherche les colisions
 					print_ = True
 					tr = False
 					for i in aux:
@@ -133,7 +134,7 @@ class Editor(Tk):
 								tr = True
 								break
 						for j in self.main.gettags(i):
-							if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly"or j == "Souris"):
+							if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly"or j == "Souris"):# on verifie si on ne touche rien
 								pass
 							else:
 								print_ = False
@@ -141,17 +142,17 @@ class Editor(Tk):
 								print(j)
 
 					if(print_ and tr):	
-						self.rayons.deleteRayons()
+						self.rayons.deleteRayons()# si on ne touche rien, on trace
 						self.rayons.drawRayons()
 					else:
 						self.rayons.x += 0
-						self.rayons.y += delta
+						self.rayons.y += delta# Sinon on remet comme avant
 				elif(e.keycode == 39):
 
 					self.rayons.x += delta
 					self.rayons.y += 0
 
-					aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
+					aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)# on cherche les colisions
 					print_ = True
 					tr = False
 					for i in aux:
@@ -162,7 +163,7 @@ class Editor(Tk):
 								tr = True
 								break
 						for j in self.main.gettags(i):
-							if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly"or j == "Souris"):
+							if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly"or j == "Souris"):# on verifie si on ne touche rien
 								pass
 							else:
 								print_ = False
@@ -170,17 +171,17 @@ class Editor(Tk):
 								print(j)
 
 					if(print_ and tr):	
-						self.rayons.deleteRayons()
+						self.rayons.deleteRayons()# si on ne touche rien, on trace
 						self.rayons.drawRayons()
 					else:
-						self.rayons.x += -delta
+						self.rayons.x += -delta# Sinon on remet comme avant
 						self.rayons.y += 0
 				elif(e.keycode == 40):
 
 					self.rayons.x += 0
 					self.rayons.y += delta
 
-					aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)
+					aux = self.main.find_overlapping(self.rayons.x,self.rayons.y,self.rayons.x,self.rayons.y)# on cherche les colisions
 					print_ = True
 					tr = False
 					for i in aux:
@@ -191,7 +192,7 @@ class Editor(Tk):
 								tr = True
 								break
 						for j in self.main.gettags(i):
-							if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly" or j == "Souris"):
+							if(default or j == "center" or j == "Rayon" or j == "current"or j == "vwpoly" or j == "Souris"):# on verifie si on ne touche rien
 								pass
 							else:
 								print_ = False
@@ -199,22 +200,22 @@ class Editor(Tk):
 								print(j)
 
 					if(print_ and tr):	
-						self.rayons.deleteRayons()
+						self.rayons.deleteRayons()# si on ne touche rien, on trace
 						self.rayons.drawRayons()
 					else:
 						self.rayons.x += 0
-						self.rayons.y += -delta
+						self.rayons.y += -delta# Sinon on remet comme avant
 
 				elif(e.keycode == 65):			
 					self.rayons.start_angle += 0.1
-					if(-pi < self.rayons.start_angle < pi):				
+					if(-pi < self.rayons.start_angle < pi):			#on tourne	
 						self.rayons.deleteRayons()
 						self.rayons.drawRayons()
 					else:				
 						self.rayons.start_angle -= 2 * pi				
 						self.rayons.deleteRayons()
 						self.rayons.drawRayons()
-				elif(e.keycode == 90):		
+				elif(e.keycode == 90):		#on tourne	
 					self.rayons.start_angle += -0.1
 					if(-pi < self.rayons.start_angle < pi):				
 						self.rayons.deleteRayons()
@@ -297,8 +298,10 @@ class Editor(Tk):
 		self.nb_souris = nb
 		self.nb_souris_gg = nb
 		self.souris = []
-		self.main.delete("Souris")
-		for i in range(nb):
+		self.time = time.time()
+
+		self.main.delete("Souris")	# On efface l'ancienne partie
+		for i in range(nb):	# on place nb souris sur la map
 
 			print_ = True
 			tr = False
@@ -306,10 +309,11 @@ class Editor(Tk):
 			while (not print_ or not tr):
 				tr = False
 				print_ = True
-				x = random.randint(0, 800)
-				y = random.randint(0, 800)
-				aux = self.main.find_overlapping(x-2,y-2,x+2,y+2)
-				for i in aux:
+				x = random.randint(0, 800)	# random X
+				y = random.randint(0, 800)	# random Y
+				aux = self.main.find_overlapping(x-2,y-2,x+2,y+2)	# on verifie si on est sur quelque chose
+
+				for i in aux:	
 					default = False
 					for k in self.poly:
 						if k.material=="default" and k.id == i:
@@ -323,12 +327,41 @@ class Editor(Tk):
 							print_ = False
 			self.souris += [Souris(self.main,x,y, self.poly)]
 
+		print_ = True
+		tr = False
+
+		while (not print_ or not tr):	# on place le gardien au hasard
+			tr = False
+			print_ = True
+			x = random.randint(0, 800)
+			y = random.randint(0, 800)
+			aux = self.main.find_overlapping(x-2,y-2,x+2,y+2)
+			for i in aux:
+				default = False
+				for k in self.poly:
+					if k.material=="default" and k.id == i:
+						default = True
+						tr = True
+						break
+				for j in self.main.gettags(i):
+					if(default or j == "center" or j == "Rayon" or j == "current"):
+						pass
+					else:
+						print_ = False
+
+		self.rayons = Rayons(self.main,x,y,angle_torche, 7* pi / 8, self.poly) #- 5* pi / 8
+		self.doCreateRayons = False
+		self.rayonsDessin = True
+		self.ray = True
+		
+		threading.Thread(target=self.souri).start()
+
 
 	def souri(self):
 		while 1:
 			if(self.ongame):
 				for ji in self.souris:
-					aux = self.main.find_overlapping(ji.x,ji.y,ji.x,ji.y)
+					aux = self.main.find_overlapping(ji.x,ji.y,ji.x,ji.y)	# on verifie si les Souris sont dans l'angle de vu du gardien
 					print_ = True
 					tr = False
 					for i in aux:
@@ -347,15 +380,18 @@ class Editor(Tk):
 						if(ji.find == False):
 							self.nb_souris = self.nb_souris - 1
 							if(self.nb_souris == 0):
-								self.main.delete("errasetxt")
-								self.main.create_text(110,40, text="vous avez gagné", tag="errasetxt")
+								self.main.delete("errasetxt") # TEXT afficher
+								self.main.create_text(50,10, text="vous avez gagné", tag="errasetxt")
+								self.main.create_text(50,30, text= str(round(time.time() - self.time, 1)) + " secondes", tag="errasetxt")
+								
 							else:
-								str_aff = str(self.nb_souris) + ' / ' + str(self.nb_souris_gg)
+								str_aff = str(self.nb_souris) + ' / ' + str(self.nb_souris_gg)	# TEXT afficher
 								self.main.delete("errasetxt")
-								self.main.create_text(110,40, text=str_aff, tag="errasetxt")
+								self.main.create_text(50,10, text=str_aff, tag="errasetxt")
 						ji.find = True
 				sleep(0.001)
-		'''
+
+		''' NE FONCµTIONNE PAS (MOUVEMENT DE SOURIS)
 		for i in range (1000):			
 			self.souris.x = self.souris.x - delta * cos(self.angle_souris)
 			self.souris.y = self.souris.y - delta * sin(self.angle_souris)
