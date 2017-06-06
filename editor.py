@@ -110,8 +110,8 @@ class Editor(Tk):
 		
 		if len(aux)!=0:	# Si on clique sur un objet
 			if self.deleting:	# On supprime le polygone cliqué
-				if self.main.gettags(aux[0])[0][:6]!="points":	# Si on clique sur un polygone
-					self.selectedPoly = self.getPolyId(self.main.gettags(aux[0])[0])
+				if self.main.gettags(aux[0])[-1][:6]!="points":	# Si on clique sur un polygone
+					self.selectedPoly = self.getPolyId(self.main.gettags(aux[0])[-1])
 					self.poly[self.selectedPoly].kill()
 					self.poly.pop(self.selectedPoly)
 					self.deleting = False
